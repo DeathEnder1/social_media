@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock title %}
+
+{% block content %}
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+      Update Profile
+    </div>
+
+    <div class="image content">
+        <div class="ui medium image">
+            <img src="{{profile.avatar.url}}">
+        </div>
+    </div>
+
+    <div class="description">
+        <div class="ui header">
+            Fixing your information or providing more about yourself
+        </div>
+        <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+            <div class="actions">      
+                <button type="submit" class="ui positive right labeled icon button">
+                    Update <i class="checkmark icon"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="ui segment">
+    {% if confirm %}
+    <div class="ui purple message">
+        Your profile has been updated
+    </div>
+    {% endif %}
+</div>
+<div class="ui segment">
+    <h2>
+        My Profile: {{request.user}}
+    </h2>
+    <div class="ui grid">
+        <div class="row">
+            <div class="six wide column">
+                <img class="ui rounded image" src="{{profile.avatar.url}}" alt="">
+                <button class="ui button" id="Model_btn">
+                    Update Profile
+                </button>
+                <table class="ui table">
+                    <tbody>
+                        <tr>
+                            <td>UserName:</td>
+                            <td>{{profile.user}}</td>
+                        </tr>
+                        <tr>
+                            <td>FirstName:</td>
+                            <td>{{profile.first_name}}</td>
+                        </tr>
+                        <tr>
+                            <td>LastName:</td>
+                            <td>{{profile.last_name}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="ui table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <center>Bio</center>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{profile.bio}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="ui table">
+                    <tbody>
+                        <tr>
+                            <td>Posts Created</td>
+                            <td>{{profile.count_posts}}</td>
+                        </tr>
+                        <tr>
+                            <td>Posts Liked</td>
+                            <td>{{profile.given_likes}}</td>
+                        </tr>
+                        <tr>
+                            <td>Likes of Posts</td>
+                            <td>{{profile.receive_likes}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="six wide column">
+                {% if p_add %}
+                    <div class="ui purple message">
+                        Post has been created
+                    </div>
+                {% endif %}
+                <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{postform}}
+                    <button type="submit" class="ui positive positive" name="submit_postform">
+                        Create post
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

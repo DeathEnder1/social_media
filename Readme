@@ -1,0 +1,12 @@
+Bước 1 : bật môi trường ảo bằng cách gõ 
+    py -m venv <tên môi trường ảo>
+tiếp tục gõ <tên môi trường ảo>\Scripts\activate
+
+Bước 2 : gõ 
+    pip install requirements.txt
+
+Bước 3 : py manage.py migrate
+    Sau đấy py manage.py collectstatic vì tao dùng css,
+    nếu nó hiện ra overwritten thì ấn y còn hiện đã có thì thôi
+
+Bước 4 : tạo superuser sau đấy lên admin tạo thêm user vì tao chưa làm register sẵn trên web 

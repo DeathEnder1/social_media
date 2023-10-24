@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Posts{% endblock title %}
+
+{% block content %}
+
+<div class="ui grid">
+    <div class="row">
+        <div class="ten wide column">
+            {% for item in st %}
+                <div class="ui card">
+                    <div class="content">
+                        <p>{{item.content}}</p>
+                    </div>
+                    <div class="content">
+                        <form action="{% url 'Posts:like_unlike_posts' %}" method="POST">
+                            {% csrf_token %}
+                            <input type='hidden' name="post_id" value={{item.id}}>
+                            <button type="submit" class="ui primary button">
+                                {% if profile not in item.liked.all %}
+                                    Like
+                                {% else %}
+                                    Unlike
+                                {% endif %}
+                            </button>
+                                {{item.num_likes}}
+                        </form>
+                    </div>
+                    <div>
+                        {% if item.comment_set.all %}
+                            {% for com in item.comment_set.all %}
+                                <p>{{com.body}}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <form action="" method="POST" class="ui form">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value={{item.id}}>
+                        {{commentform}}
+                        <button type="submit" class="ui button" name="submit_commentform">
+                            comment
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="six wide column">
+            {% if p_add %}
+                <div class="ui purple message">
+                    Post has been created
+                </div>
+            {% endif %}
+            <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{postform}}
+                <button type="submit" class="ui positive positive" name="submit_postform">
+                    Create post
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock content %}
