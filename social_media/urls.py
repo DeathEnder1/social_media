@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from facebook_ver2 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',views.home),
+    path('login/', views.login_page, name='login'),
+    path('register/', views.register, name='register'),
+    path('logout/', views.logoutUser, name='logout'),
+    path('profile/',views.profile,name='profile'),
+    path('profile/profile_edit/',views.setting,name="profile_edit"),
 ]

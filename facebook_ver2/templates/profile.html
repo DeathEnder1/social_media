@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{%load static %}
+
+{% block tile %}Profile{% endblock tile %}
+{% block content %}
+    <p>{{user.avatar}}</p>
+    <p>User Name: {{user.username}}</p>
+
+    {%if user.first_name%}
+        <p>First Name: {{user.first_name}}</p>
+    {%else%}
+        <p>First Name: None</p>
+    {%endif%}
+
+    {%if user.last_name%}
+        <p>Last Name: {{user.last_name}}</p>
+    {%else%}
+        <p>Last Name: None</p>
+    {%endif%}
+
+    {%if user.email%}
+        <p>Email: {{user.email}}</p>
+    {%else%}
+        <p>Email: None</p>
+    {%endif%}
+
+    <p>Bio: {{user.bio}}</p>
+
+    <a href="profile_edit/">Edit profile</a>
+{%endblock content%}
