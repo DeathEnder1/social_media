@@ -4,29 +4,14 @@
 
 {% block content%}
 <div>
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
-        <p>User Name: {{user.username}}</p>
-            <div class="from_group">
-                <label for="profile_pic">Avatar</label>
-                <input type="file" id="profile_pic" name="profile_pic">
-            </div>
-            <div>
-                <label>First Name:</label>
-                <input type="text" class="form-control" name="first_name" id="id_first_name" required maxlength="20" value="{{user.first_name}}">
-            </div>
-            <div>
-                <label>Last Name:</label>
-                <input type="text" class="form-control" name="last_name" id="id_last_name" required maxlength="20" value="{{user.last_name}}">
-            </div>
-            <div>
-                <label>Email:</label>
-                <input type="email" class="form-control" name="email" id="id_email" required maxlength="20" value="{{user.email}}">
-            </div>            
-            <div>
-                <label>Bio:</label>
-                <input type="text" class="form-control" name="bio" id="id_bio" required maxlength="20" value="{{user.bio}}">
-            </div>
+        {%for field in form %}
+        <div class="form__group">
+            <label for="profile_pic">{{field.label}}</label>
+            {{field}}
+        </div>
+        {% endfor %}
         {{form.error}}
         <a href="{{request.META.HTTP_REFERER}}">Return</a>
         <input type="submit" value="submit">

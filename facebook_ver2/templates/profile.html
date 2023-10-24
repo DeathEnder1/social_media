@@ -3,7 +3,9 @@
 
 {% block tile %}Profile{% endblock tile %}
 {% block content %}
-    <p>{{user.avatar}}</p>
+    <div class="avatar avatar--small">
+        <img src="{{user.avatar.url}}" width="80" height="80">
+    </div>
     <p>User Name: {{user.username}}</p>
 
     {%if user.first_name%}

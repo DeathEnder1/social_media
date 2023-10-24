@@ -2,10 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from .models import Profiles
-from django.contrib.auth.models import User
-from .forms import Profile_Form
+from .forms import Profile_Form,MyUserCreationForm
 
 # Create your views here.
 
@@ -30,9 +28,9 @@ def login_page(request):
     return render(request, 'login_register.html', {'page':page})
 
 def register(request):
-    form = UserCreationForm()
+    form = MyUserCreationForm()
     if request.method=='POST':  
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user=form.save(commit=False)
             user.username= user.username.lower()
@@ -50,19 +48,19 @@ def logoutUser(request):
 @login_required(login_url='login')
 def profile(request):
     uid=request.session.get('_auth_user_id')
-    user =User.objects.get(id=uid)
+    user =Profiles.objects.get(id=uid)
     context={'user':user}
     return render(request,'profile.html')
 
 @login_required(login_url='login')
 def setting(request):
     uid=request.session.get('_auth_user_id')
-    user =User.objects.get(id=uid)
+    user =Profiles.objects.get(id=uid)
     context={'user':user}
     form=Profile_Form(instance=user)
     if request.method=="POST":
-        form=Profile_Form(request.POST,instance=user)
+        form=Profile_Form(request.POST, request.FILES,instance=user)
         if form.is_valid():
             form.save()
             return redirect("/profile")
-    return render(request,'setting.html', {'user':user})
+    return render(request,'setting.html', {'form':form})

@@ -33,6 +33,9 @@
                 </form>
             </div>
             <div class="row gx">
+                <div class="avatar avatar--small" >
+                    <img src="{{user.avatar.url}}" width="60" height="60">
+                </div>
                 <a href="{% url 'profile' %}" class="item">
                     {{request.user}}
                 </a>
