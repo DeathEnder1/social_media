@@ -3,6 +3,36 @@
 {% block tile %}Home{% endblock tile %}
 
 {%block content%}
+{% if request.user.is_authenticated %}
+<div>
+    <table>
+        <thead>
+            <th>Content</th>
+            <th>Image</th>
+            <th>Last Updated</th>
+            <th>User</th>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+                <tr>
+                    <td>
+                        {{article.content}}
+                    </td>
+                    <td>
+                        {{article.image}}
+                    </td>
+                    <td>
+                        {{article.created}}
+                    </td>
+                    <td>
+                        <a href="user_page/{{article.author.id}}">{{article.author}}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>        
+</div>
+{% endif %}
 
 {%endblock content%}
 

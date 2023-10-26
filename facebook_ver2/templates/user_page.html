@@ -7,6 +7,7 @@
         <img src="{{user.avatar.url}}" width="80" height="80">
     </div>
     <p>User Name: {{user.username}}</p>
+    
     {%if user.first_name%}
         <p>First Name: {{user.first_name}}</p>
     {%else%}
@@ -26,7 +27,7 @@
     {%endif%}
 
     <p>Bio: {{user.bio}}</p>
-    <a href="profile_edit/">Edit profile</a>
+    {% if request.user == user %}
     <div>
         <div>
             <h3>Creating Post</h3>
@@ -39,8 +40,9 @@
             </button>
         </form>
     </div>
-
-
+    <a href="profile_edit/">Edit profile</a>
+    {% endif %}
+    
     <div>
         {% for item in st %}
         <div>
