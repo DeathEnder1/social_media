@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{%load static %}
+
+{% block tile %}Profile{% endblock tile %}
+{% block content %}
+    <div class="avatar avatar--small">
+        <img src="{{user.avatar.url}}" width="80" height="80">
+    </div>
+    <p>User Name: {{user.username}}</p>
+    {%if user.first_name%}
+        <p>First Name: {{user.first_name}}</p>
+    {%else%}
+        <p>First Name: None</p>
+    {%endif%}
+
+    {%if user.last_name%}
+        <p>Last Name: {{user.last_name}}</p>
+    {%else%}
+        <p>Last Name: None</p>
+    {%endif%}
+
+    {%if user.email%}
+        <p>Email: {{user.email}}</p>
+    {%else%}
+        <p>Email: None</p>
+    {%endif%}
+    {% for blocked_user in blocked_users %}
+    {% if blocked_user.blocked_user == user %}
+        <p>You have already blocked this user.</p>
+    {% else %}
+        <form method="post" action="{% url 'block_user' user.username %}">
+            {% csrf_token %}
+            <button type="submit">Block</button>
+        </form>
+    {% endif %}
+{% endfor %}
+
+    <p>Bio: {{user.bio}}</p>
+    <a href="profile_edit/">Edit profile</a>
+    <div>
+        <div>
+            <h3>Creating Post</h3>
+        </div>
+        <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{postform.as_p}}
+            <button type="submit" class="ui positive positive" name="submit_postform">
+                Create post
+            </button>
+        </form>
+    </div>
+
+
+    <div>
+        {% for item in st %}
+        <div>
+            <div class="ui card">
+                <div class="content">
+                    <p>{{item.content}}</p>
+                    <a href="/delete/{{item.id}}">Delete</a>
+                </div>
+                <div>
+                    {% if item.comment_set.all %}
+                        {% for com in item.comment_set.all %}
+                            <p>{{com.body}}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <form action="" method="POST" class="ui form">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value={{item.id}}>
+                    {{commentform}}
+                    <button type="submit" class="ui button" name="submit_commentform">
+                        comment
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+{%endblock content%}
