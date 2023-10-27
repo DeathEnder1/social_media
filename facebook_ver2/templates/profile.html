@@ -24,6 +24,16 @@
     {%else%}
         <p>Email: None</p>
     {%endif%}
+    {% for blocked_user in blocked_users %}
+    {% if blocked_user.blocked_user == user %}
+        <p>You have already blocked this user.</p>
+    {% else %}
+        <form method="post" action="{% url 'block_user' user.username %}">
+            {% csrf_token %}
+            <button type="submit">Block</button>
+        </form>
+    {% endif %}
+{% endfor %}
 
     <p>Bio: {{user.bio}}</p>
     <a href="profile_edit/">Edit profile</a>

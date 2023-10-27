@@ -29,6 +29,6 @@ urlpatterns = [
     path('delete/<int:id>', views.delete, name='delete'),
     path('profile/',views.profile,name='profile'),
     path('profile/profile_edit/',views.setting,name="profile_edit"),
-    path('user_page/<int:id>', views.user_page, name='user_page')
-
+    path('user_page/<int:id>', views.user_page, name='user_page'),
+    path('block/<int:id>/', views.block_user, name='block_user'),
 ]

@@ -64,3 +64,7 @@ class Like(models.Model):
     value = models.CharField(choices=LIKE_CHOICES,max_length=20)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+class Block(models.Model):
+    blocker = models.ForeignKey(Profiles, related_name='blocker', on_delete=models.CASCADE)
+    blocked_user = models.ForeignKey(Profiles, related_name='blocked_user', on_delete=models.CASCADE)

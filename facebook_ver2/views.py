@@ -146,3 +146,17 @@ def user_page(request,id):
              'p_add':p_add,}
 
     return render(request,'user_page.html',context)
+
+@login_required(login_url='login')
+def block_user(request, id):
+    if request.method == 'POST':
+        form = BlockForm(request.POST)
+        if form.is_valid():
+            blocker = request.user
+            blocked_user = User.objects.get(id=id)
+            if form.cleaned_data['action'] == 'block':
+                Block.objects.create(blocker=blocker, blocked_user=blocked_user)
+            else:
+                Block.objects.filter(blocker=blocker, blocked_user=blocked_user).delete()
+            return redirect('profile', user_id=id)
+    return redirect('')
