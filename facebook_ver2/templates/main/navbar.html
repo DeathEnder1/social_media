@@ -14,7 +14,6 @@
             {% if request.user.is_authenticated %}
             <div class="item">
                 <div class="ui floating dropdown icon button teal">
-                    Friends
                     <i class="dropdown icon"></i>
                     <div class="menu">
                         <a href="" class="item">All Profile</a>
@@ -36,7 +35,7 @@
                 <div class="avatar avatar--small" >
                     <img src="{{user.avatar.url}}" width="60" height="60">
                 </div>
-                <a href="{% url 'profile' %}" class="item">
+                <a href="{% url 'profile'  %}" class="item">
                     {{request.user}}
                 </a>
 

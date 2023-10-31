@@ -7,11 +7,14 @@ from django.core.validators import FileExtensionValidator
 class Profiles(AbstractUser):
     first_name = models.CharField(max_length=200, blank= True)
     last_name =  models.CharField(max_length=200, blank= True)
+    follows = models.ManyToManyField("self", related_name="followed_by", symmetrical= False, blank=True )
     bio = models.TextField(default="no bio", max_length=300)
     email = models.EmailField(unique=True ,max_length=200, blank=True)
     avatar = models.ImageField(default="avatar.svg")
 
     REQUIRED_FIELDS = []
+
+
 
 class Post(models.Model):
     content = models.TextField()
@@ -21,7 +24,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Profiles, on_delete=models.CASCADE, related_name="posts")
 
-    
+
     def given_likes(self):
         likes = self.like_set.all()
         total_liked = 0
@@ -68,3 +71,5 @@ class Like(models.Model):
 class Block(models.Model):
     blocker = models.ForeignKey(Profiles, related_name='blocker', on_delete=models.CASCADE)
     blocked_user = models.ForeignKey(Profiles, related_name='blocked_user', on_delete=models.CASCADE)
+
+

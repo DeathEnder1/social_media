@@ -71,5 +71,18 @@
         {% endfor %}
     </div>
 
+    <form method = "POST">
+        {% csrf_token %}
+        {%if request.user in user.followed_by.all %}
+            <button class = "btn btn-outline-danger"  type = "submit">
+                Unfollow @{{user.username}} 
+            </button>
+        {%else%}   
+            <button class = "btn btn-outline-success"  type = "submit">      
+                Follow @{{user.username}}
+            </button>
+        {%endif%}
+    </form>
+    <br/>
 
 {%endblock content%}

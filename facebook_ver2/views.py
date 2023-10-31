@@ -55,6 +55,7 @@ def profile(request):
     uid=request.session.get('_auth_user_id')
     st = Post.objects.filter(author = uid)
     user = Profiles.objects.get(id=uid)
+    follows = user.follows.all()
     postform =PostForm()
     commentform = CommentForm()
     p_add = False
@@ -80,6 +81,7 @@ def profile(request):
             
     
     context={'user':user,
+             'follows':follows,
              'st':st,
              'postform':postform,
              'commentform ':commentform ,
@@ -114,10 +116,21 @@ def setting(request):
 @login_required(login_url='login')
 def user_page(request,id):
     user = Profiles.objects.get(id=id)
+    follows_list = user.follows.all()    
     st = Post.objects.filter(author = id)
     postform =PostForm()
     commentform = CommentForm()
     p_add = False
+    if request.method == "POST" :
+        aid = request.session.get('_auth_user_id')
+        current_user = Profiles.objects.get(id=aid)
+        if user in current_user.follows.all() :            
+            current_user.follows.remove(user)
+        else :
+            current_user.follows.add(user)
+        current_user.save()
+        
+
 
     if "submit_postform" in request.POST:
         postform =PostForm(request.POST, request.FILES)
@@ -141,6 +154,7 @@ def user_page(request,id):
     
     context={'user':user,
              'st':st,
+             'follows_list':follows_list,
              'postform':postform,
              'commentform ':commentform ,
              'p_add':p_add,}
