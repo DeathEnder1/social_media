@@ -1,6 +1,7 @@
 from django import forms
 from .models import Profiles,Comment,Post
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 
 class MyUserCreationForm(UserCreationForm):
     class Meta:

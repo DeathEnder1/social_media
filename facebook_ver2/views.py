@@ -9,11 +9,14 @@ from django.http import HttpResponse
 # Create your views here.
 
 def home(request):
-    articles= Post.objects.all()
-    context = {
-        'articles':articles
-    }
-    return render(request, 'main/home.html',context)
+    if request.user.is_authenticated:
+        articles= Post.objects.all()
+        context = {
+            'articles':articles
+        }
+        return render(request, 'home.html',context)
+    else: 
+        return redirect('/login')
 
 def login_page(request):
     page='login'
@@ -51,48 +54,13 @@ def logoutUser(request):
     return redirect('/')
 
 @login_required(login_url='login')
-def profile(request):
-    uid=request.session.get('_auth_user_id')
-    st = Post.objects.filter(author = uid)
-    user = Profiles.objects.get(id=uid)
-    postform =PostForm()
-    commentform = CommentForm()
-    p_add = False
-
-    if "submit_postform" in request.POST:
-        postform =PostForm(request.POST, request.FILES)
-        if postform.is_valid(): 
-            formin = postform.save(commit=False)
-            formin.author = user
-            formin.save()
-            p_add = True
-            return redirect("/profile") 
-        
-    if "submit_commentform" in request.POST:
-        commentform = CommentForm(data=request.POST)
-        if commentform.is_valid():
-            formin = commentform.save(commit=False)
-            formin.user = user
-            formin.post = Post.objects.get(id=request.POST.get('post_id'))
-            # commentform = CommentForm()
-            formin.save()
-            
-    
-    context={'user':user,
-             'st':st,
-             'postform':postform,
-             'commentform ':commentform ,
-             'p_add':p_add,}
-    
-    return render(request,'profile.html',context)
-
-@login_required(login_url='login')
 def delete(request, id):
     st=Post.objects.get(id=id)
+    uid=request.session.get('_auth_user_id')
     if request.method=='POST':
         if request.user== st.author:
             st.delete()
-            return redirect('/profile')
+            return redirect('/user_page/'+str(uid))
         else:
             return HttpResponse('You can not edit this post')
     return render(request, 'delete.html', {'st':st})
@@ -107,16 +75,25 @@ def setting(request):
         form=Profile_Form(request.POST, request.FILES,instance=user)
         if form.is_valid():
             form.save()
-            return redirect("/profile")
+            return redirect('/user_page/'+str(uid))
     return render(request,'setting.html', {'form':form})
 
 @login_required(login_url='login')
 def user_page(request,id):
-    user = Profiles.objects.get(id=id)
+    user = Profiles.objects.get(id=id)   
     st = Post.objects.filter(author = id)
     postform =PostForm()
     commentform = CommentForm()
     p_add = False
+    if request.method == "POST" :
+        aid = request.session.get('_auth_user_id')
+        current_user = Profiles.objects.get(id=aid)
+
+        if user in current_user.follows.all():
+            current_user.follows.remove(user)
+        else:
+            current_user.follows.add(user)
+        
 
     if "submit_postform" in request.POST:
         postform =PostForm(request.POST, request.FILES)
@@ -126,7 +103,7 @@ def user_page(request,id):
             formin.save()
             # postform = PostForm()
             p_add = True
-            return redirect("/profile") 
+            return redirect('/user_page/'+str(id))
         
     if "submit_commentform" in request.POST:
         commentform = CommentForm(data=request.POST)
