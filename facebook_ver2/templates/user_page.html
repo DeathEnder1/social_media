@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{%load static %}
+
+{% block tile %}{{user.username}}{% endblock tile %}
+{% block content %}
+    <div class="profile">
+        <div class="avatar">
+            <img src="{{user.avatar.url}}" width="80" height="80" class="profile_avatar">
+        </div>
+        <div class="name_container">
+            <div class="name"> 
+                {%if user.first_name%}
+                    <p>{{user.first_name}} {{user.last_name}} </p>
+                {%else%}
+                    <p>No name yet </p>
+                {% endif %}
+            </div>
+            <div class="username">
+                <p>@{{user.username}}</p>
+            </div>
+        </div>
+        <div class="right">
+            {% if request.user == user %}
+                <a href="profile_edit/" class="edit">
+                    <p style="padding-top: 7px; padding-left: 4px;">Edit profile</p>
+                </a>
+            {%else%}
+                <form method = "POST">
+                    {% csrf_token %}
+                    {% if request.user in user.followed_by.all %}
+                        <button type = "submit" class="button red_btn">
+                            Unfollow user
+                        </button>
+                    {%else%}   
+                        <button type = "submit" class="button green_btn">      
+                            Follow user
+                        </button>
+                    {%endif%}
+                </form>
+            {%endif%}
+        </div>
+    </div>
+    <div class="bio_container">
+        <p>{{user.bio}}</p>
+    </div>
+    {% if request.user == user %}
+    <hr class="line">
+    <div class="create_container">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div >
+                <textarea name="content" class="input_content" placeholder="What's on your mind?"></textarea>
+            </div>
+            <button type="submit" class="ui positive positive" name="submit_postform">
+                Create post
+            </button>
+        </form>
+    </div>
+    {% endif %}
+    <hr class="line">
+    <div>
+        {% for item in st %}
+        <div class="post_container">
+            <div class="post" >
+                <div class="header">
+                    <div class="user_name">
+                        <a href="/user_page/{{item.author.id}}" class="name" >
+                            <img src="{{item.author.avatar.url}}" class="avatar_image"> 
+                        </a> 
+                        <div>
+                            <a href="/user_page/{{item.author.id}}" class="name">{{item.author.first_name}} {{item.author.last_name}}</a>
+                            <a href="/user_page/{{item.author.id}}" class="mention">
+                                @{{item.author.username}}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right">
+                        {{item.created|timesince}} ago
+                    </div>
+                </div>
+                <div class="post_content">
+                    {{item.content}}
+                </div>
+                <div>
+                    {% if item.image != '' %}
+                        <img src="{{item.image.url}}" class="post_image">
+                    {% endif %}
+                </div>
+                <div class="like_cmt">
+                    <div class="box">
+                        <a href="">Like</a>
+                    </div>
+                    <div class="box">
+                        <a href="">Comment</a>
+                    </div>
+                    <div class="box">
+                        <a href="">Share</a>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+    </div>
+
+
+{%endblock content%}

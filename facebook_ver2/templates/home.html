@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block tile %}Mặt sách vơ 2{% endblock tile %}
+
+{%block content%}
+{% load static %}
+{% if request.user.is_authenticated %}
+    
+    {% for article in articles %}
+    <div class="post_container">
+        <div class="post" >
+            <div class="header">
+                <div class="user_name">
+                    <a href="/user_page/{{article.author.id}}" class="name" >
+                        <img src="{{article.author.avatar.url}}" class="avatar_image"> 
+                    </a> 
+                    <div>
+                        <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
+                        <a href="/user_page/{{article.author.id}}" class="mention">
+                            @{{article.author.username}}
+                        </a>
+                    </div>
+                </div>
+                <div class="right">
+                    {{article.created|timesince}} ago
+                </div>
+            </div>
+            <div class="post_content">
+                {{article.content}}
+            </div>    
+            <div>
+                {% if article.image != '' %}
+                    <img src="{{article.image.url}}" class="post_image">
+                {% endif %}
+            </div>
+            <div class="like_cmt">
+                <div class="box">
+                    <a href="">Like</a>
+                </div>
+                <div class="box">
+                    <a href="">Comment</a>
+                </div>
+                <div class="box">
+                    <a href="">Share</a>
+                </div>
+                
+            </div>
+        </div>
+    </div>    
+    {% endfor %}      
+{% endif %}
+
+{%endblock content%}
+
+{%block script%}
+<script>
+$(document).ready(function(){
+    console.log('Working')
+})
+</script>
+{%endblock script%}

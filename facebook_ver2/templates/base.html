@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block tile %}{%endblock%}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
+    <link rel="icon" href="/static/styles/favicon.ico">
+</head>
+<body>
+    
+    <div class = "nav_container">
+        <div class="left">
+            <a href="/" class="">
+                <img src="/static/styles/logo.png" class="logo_image">
+            </a>
+        </div>
+        <div class="right">
+            {% if request.user.is_authenticated %}
+            <div class="avatar_container">
+                <a href="/user_page/{{request.user.id}}" >
+                    <img src="{{request.user.avatar.url}}" class="avatar_image">
+                </a>
+            </div>
+                <a href="{% url 'logout' %}" class="login_logout" >
+                    Logout
+                </a>
+            {%else%}
+            <a href="{% url 'login'%}" class="login_logout">
+                Login
+            </a>
+            {%endif%}
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+</body>
+</html>
