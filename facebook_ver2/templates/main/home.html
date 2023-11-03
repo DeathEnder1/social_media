@@ -12,8 +12,9 @@
             <th>Last Updated</th>
             <th>User</th>
         </thead>
-        <tbody>
+        <tbody> 
             {% for article in articles %}
+                {%if article.author in user.follows.all or article.author == user %} 
                 <tr>
                     <td>
                         {{article.content}}
@@ -28,6 +29,7 @@
                         <a href="user_page/{{article.author.id}}">{{article.author}}</a>
                     </td>
                 </tr>
+                {%endif%}
             {% endfor %}
         </tbody>
     </table>        

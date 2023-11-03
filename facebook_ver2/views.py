@@ -9,11 +9,15 @@ from django.http import HttpResponse
 # Create your views here.
 
 def home(request):
-    articles= Post.objects.all()
-    context = {
-        'articles':articles
-    }
-    return render(request, 'main/home.html',context)
+    if request.user.is_authenticated:
+        user = Profiles.objects.get(id=request.user.id)
+        articles= Post.objects.all()
+        follows = user.follows.all()
+        context = {
+            'articles':articles
+        }
+        return render(request, 'main/home.html',context)
+    else:   return redirect('/login')
 
 def login_page(request):
     page='login'

@@ -21,7 +21,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts', validators=[FileExtensionValidator(['png', 'jpg', 'jpeg'])], blank=True)
     liked = models.ManyToManyField(Profiles, blank=True, related_name='likes')
     updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)                                     
     author = models.ForeignKey(Profiles, on_delete=models.CASCADE, related_name="posts")
 
 

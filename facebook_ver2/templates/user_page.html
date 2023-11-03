@@ -73,7 +73,7 @@
 
     <form method = "POST">
         {% csrf_token %}
-        {%if request.user in user.followed_by.all %}
+        {%if request.user in user.followed_by.all %}         
             <button class = "btn btn-outline-danger"  type = "submit">
                 Unfollow @{{user.username}} 
             </button>
