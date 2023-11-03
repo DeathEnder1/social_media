@@ -176,3 +176,18 @@ def block_user(request, id):
                 Block.objects.filter(blocker=blocker, blocked_user=blocked_user).delete()
             return redirect('/', user_id=id)
     return redirect('')
+
+@login_required(login_url='login')
+def search(request):
+	if request.method == "POST":
+     
+		searched= request.POST['searched']
+		profile = Profiles.objects.filter(username__contains=searched)
+	
+		return render(request, 
+		'search.html', 
+		{'searched':searched,
+		'profile':profile})
+	else:
+		return render(request, 
+		'search', {})

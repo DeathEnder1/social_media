@@ -24,9 +24,10 @@
                 </div>
             </div>
             <div class="item">
-                <form action="" method="POST">
+                <form action="{% url 'search'%}" method="POST">
+                    {% csrf_token %}
                     <div class="ui action left icon input">
-                        <input type="text" class="prompt" name="q" placeholder="name of a friend...">
+                        <input type="text" class="prompt" name="searched" placeholder="name of a friend...">
                         <i class="search icon"></i>
                         <button class="ui button" type="submit">Search</button>
                     </div>
