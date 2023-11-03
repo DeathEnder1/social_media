@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Profiles,Post,Comment,Like, Block
-from .forms import Profile_Form,MyUserCreationForm,PostForm,CommentForm
+from .forms import Profile_Form,MyUserCreationForm,PostForm,CommentForm, BlockForm
 from django.http import HttpResponse
 
 # Create your views here.
@@ -85,6 +85,7 @@ def user_page(request,id):
     postform =PostForm()
     commentform = CommentForm()
     p_add = False
+    is_blocked = Block.objects.filter(blocker= request.user, blocked_user=Profiles.objects.get(id=id)).exists()
     if request.method == "POST" :
         aid = request.session.get('_auth_user_id')
         current_user = Profiles.objects.get(id=aid)
@@ -119,7 +120,9 @@ def user_page(request,id):
              'st':st,
              'postform':postform,
              'commentform ':commentform ,
-             'p_add':p_add,}
+             'p_add':p_add,
+             'is_blocked':is_blocked
+             }
 
     return render(request,'user_page.html',context)
 
@@ -129,10 +132,14 @@ def block_user(request, id):
         form = BlockForm(request.POST)
         if form.is_valid():
             blocker = request.user
-            blocked_user = Profiles.objects.get(id=id)
-            if form.cleaned_data['action'] == 'block':
-                Block.objects.create(blocker=blocker, blocked_user=blocked_user)
-            else:
+            blocked_user = Profiles.objects.get(id=id)  # Lấy thông tin người bị block từ id truyền vào
+            action = form.cleaned_data['action']
+            if action == 'block':
+                # Kiểm tra xem có sẵn một bản ghi block hay không
+                existing_block = Block.objects.filter(blocker=blocker, blocked_user=blocked_user).first()
+                if not existing_block:
+                    Block.objects.create(blocker=blocker, blocked_user=blocked_user)
+            elif action == 'unblock':
                 Block.objects.filter(blocker=blocker, blocked_user=blocked_user).delete()
-            return redirect('profile', user_id=id)
+            return redirect('/', user_id=id)
     return redirect('')

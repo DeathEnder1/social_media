@@ -23,3 +23,14 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['body']
+        
+class BlockForm(forms.Form):
+    ACTIONS = [
+        ('block', 'Block'),
+        ('unblock', 'Unblock'),
+    ]
+
+    action = forms.ChoiceField(
+        choices=ACTIONS,
+        widget=forms.RadioSelect,
+    )

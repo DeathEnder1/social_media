@@ -25,6 +25,21 @@
                     <p style="padding-top: 7px; padding-left: 4px;">Edit profile</p>
                 </a>
             {%else%}
+            <div class="padding">
+                {% if not is_blocked%}
+                    <form method="post" action="{% url 'block_user' id=user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="block">
+                        <button type="submit" class="button">Block</button >
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'block_user' id=user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="unblock">
+                        <button type="submit" class="button">Unblock</button>
+                    </form>
+                {% endif %}
+            </div>
                 <form method = "POST">
                     {% csrf_token %}
                     {% if request.user in user.followed_by.all %}
@@ -46,15 +61,20 @@
     {% if request.user == user %}
     <hr class="line">
     <div class="create_container">
-        <form action="" method="POST">
-            {% csrf_token %}
-            <div >
-                <textarea name="content" class="input_content" placeholder="What's on your mind?"></textarea>
-            </div>
-            <button type="submit" class="ui positive positive" name="submit_postform">
-                Create post
-            </button>
-        </form>
+        <div class="box">
+            <form action="" method="POST">
+                <p style="font-weight: bold; font-size:25px;">Create a post</p>
+                {% csrf_token %}
+                <div>
+                    <textarea name="content" class="input_content" placeholder="What's on your mind?"></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="ui positive positive" name="submit_postform">
+                        Create post
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
     {% endif %}
     <hr class="line">
