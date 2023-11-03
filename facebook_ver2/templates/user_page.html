@@ -42,34 +42,51 @@
     </div>
     <a href="profile_edit/">Edit profile</a>
     {% endif %}
+
+        
+    {% if not is_blocked %}
+        <form method="post" action="{% url 'block_user' id=user.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="block">
+            <button type="submit">Block</button>
+        </form>
+    {% else %}
+        <form method="post" action="{% url 'block_user' id=user.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="unblock">
+            <button type="submit">Unblock</button>
+        </form>
+    {% endif %}
     
-    <div>
-        {% for item in st %}
+    
+    
         <div>
-            <div class="ui card">
-                <div class="content">
-                    <p>{{item.content}}</p>
-                    <a href="/delete/{{item.id}}">Delete</a>
+            {% for item in st %}
+            <div>
+                <div class="ui card">
+                    <div class="content">
+                        <p>{{item.content}}</p>
+                        <a href="/delete/{{item.id}}">Delete</a>
+                    </div>
+                    <div>
+                        {% if item.comment_set.all %}
+                            {% for com in item.comment_set.all %}
+                                <p>{{com.body}}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <form action="" method="POST" class="ui form">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value={{item.id}}>
+                        {{commentform}}
+                        <button type="submit" class="ui button" name="submit_commentform">
+                            comment
+                        </button>
+                    </form>
                 </div>
-                <div>
-                    {% if item.comment_set.all %}
-                        {% for com in item.comment_set.all %}
-                            <p>{{com.body}}</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                <form action="" method="POST" class="ui form">
-                    {% csrf_token %}
-                    <input type="hidden" name="post_id" value={{item.id}}>
-                    {{commentform}}
-                    <button type="submit" class="ui button" name="submit_commentform">
-                        comment
-                    </button>
-                </form>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-
-
-{%endblock content%}
+    
+    
+    {%endblock content%}
