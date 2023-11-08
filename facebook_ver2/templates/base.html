@@ -10,12 +10,19 @@
     <link rel="icon" href="/static/styles/favicon.ico">
 </head>
 <body>
-    
     <div class = "nav_container">
         <div class="left">
             <a href="/" class="">
                 <img src="/static/styles/logo.png" class="logo_image">
             </a>
+            <form action="{% url 'search'%}" method="POST">
+                {% csrf_token %}
+                <div class="">
+                    <input type="text" class="prompt" name="searched" placeholder="name of a friend...">
+                    <i class="search icon"></i>
+                    <button class="" type="submit">Search</button>
+                </div>
+            </form>
         </div>
         <div class="right">
             {% if request.user.is_authenticated %}

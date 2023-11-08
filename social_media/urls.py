@@ -30,6 +30,7 @@ urlpatterns = [
     path('user_page/profile_edit/',views.setting,name="profile_edit"),
     path('user_page/<int:id>', views.user_page, name='user_page'),
     path('block/<int:id>/', views.block_user, name='block_user'),
+    path('search', views.search, name='search'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
