@@ -39,6 +39,7 @@
                         <button type="submit" class="button">Unblock</button>
                     </form>
                 {% endif %}
+                
             </div>
                 <form method = "POST">
                     {% csrf_token %}
@@ -53,6 +54,8 @@
                     {%endif%}
                 </form>
             {%endif%}
+            <p>Followers: {{user.followed_by.count}}</p><br>
+            <p>Following: {{user.follows.count}}</p>
         </div>
     </div>
     <div class="bio_container">
@@ -62,12 +65,15 @@
     <hr class="line">
     <div class="create_container">
         <div class="box">
-            <form action="" method="POST">
+            <form action="" method="POST" enctype="multipart/form-data">
                 <p style="font-weight: bold; font-size:25px;">Create a post</p>
                 {% csrf_token %}
-                <div>
+                <p>
                     <textarea name="content" class="input_content" placeholder="What's on your mind?"></textarea>
-                </div>
+                </p>
+                <p>
+                    {{postform.image}}
+                </p>
                 <div>
                     <button type="submit" class="ui positive positive" name="submit_postform">
                         Create post

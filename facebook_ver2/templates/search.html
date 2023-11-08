@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content%}
+    <center>
+        {% if searched %}
+        <h1>You Searched For {{ searched.username }}</h1>
+        <br/>
+        {% for profiles in profile %}
+            <a href="{%url 'user_page' user.id %}">{{ profiles }}</a><br/>
+        {% endfor %}
+        {% else %}
+		<h1>Hey! You Forgot To Search For A Friends!!!! </h1>
+        {% endif %}
+{% endblock %}
