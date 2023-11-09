@@ -4,36 +4,130 @@
 
 {%block content%}
 {% if request.user.is_authenticated %}
+<button class = "my-button active" data-button-id="button1" onclick="showFollowingsTable()">Followings</button>
+<button class = "my-button" data-button-id="button2" onclick="showForYouTable()">For You</button>
+<style>
+.my-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.my-button:active {
+  position: relative;
+  z-index: 1;
+  text-decoration: underline;
+}
+
+.my-button:hover{
+    background-color: rgb(132, 101, 101);
+}
+
+.my-button:active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 2px;
+  background-color: blue;
+  border-radius: 50%;
+  
+}
+
+.my-button.active{
+    text-decoration: underline;
+}
+
+</style>
+<script>
+    function showFollowingsTable() {
+        document.getElementById('followings-table').style.display = 'table';
+        document.getElementById('for-you-table').style.display = 'none';
+    }
+    
+    function showForYouTable() {
+        document.getElementById('followings-table').style.display = 'none';
+        document.getElementById('for-you-table').style.display = 'table';
+    }
+
+
+
+
+const buttons = document.querySelectorAll('.my-button');
+
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    // Add the blue line to the clicked button
+    button.classList.add('active');
+  });
+});
+
+// Remove the blue line when the user hovers over a button
+buttons.forEach(button => {
+  button.addEventListener('mouseenter', () => {
+    button.classList.remove('active');
+  });
+});
+
+</script>
+
 <div>
-    <table>
+    <table id="followings-table" style="display: none;">
         <thead>
-            <th>Content</th>
-            <th>Image</th>
-            <th>Last Updated</th>
-            <th>User</th>
+            <tr>
+                <th>Content</th>
+                <th>Image</th>
+                <th>Last Updated</th>
+                <th>User</th>
+            </tr>
         </thead>
         <tbody> 
             {% for article in articles %}
-                {%if article.author in user.follows.all or article.author == user %} 
-                <tr>
-                    <td>
-                        {{article.content}}
-                    </td>
-                    <td>
-                        {{article.image}}
-                    </td>
-                    <td>
-                        {{article.created}}
-                    </td>
-                    <td>
-                        <a href="user_page/{{article.author.id}}">{{article.author}}</a>
-                    </td>
-                </tr>
-                {%endif%}
+                {% if article.author in user.follows.all or article.author == user %} 
+                    <tr>
+                        <td>{{ article.content }}</td>
+                        <td>{{ article.image }}</td>
+                        <td>{{ article.created }}</td>
+                        <td><a href="user_page/{{ article.author.id }}">{{ article.author }}</a></td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>        
 </div>
+
+<div>
+    <table id="for-you-table">
+        <thead>
+            <tr>
+                <th>Content</th>
+                <th>Image</th>
+                <th>Last Updated</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody> 
+            {% for article in articles %}
+                <tr>
+                    <td>{{ article.content }}</td>
+                    <td>{{ article.image }}</td>
+                    <td>{{ article.created }}</td>
+                    <td><a href="user_page/{{ article.author.id }}">{{ article.author }}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>        
+
 {% endif %}
 
 {%endblock content%}

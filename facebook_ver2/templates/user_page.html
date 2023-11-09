@@ -71,6 +71,20 @@
         {% endfor %}
     </div>
 
+    {% if not is_blocked %}
+        <form method="post" action="{% url 'block_user' id=user.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="block">
+            <button type="submit">Block</button>
+        </form>
+    {% else %}
+        <form method="post" action="{% url 'block_user' id=user.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="unblock">
+            <button type="submit">Unblock</button>
+        </form>
+    {% endif %}
+    
     <form method = "POST">
         {% csrf_token %}
         {%if request.user in user.followed_by.all %}         

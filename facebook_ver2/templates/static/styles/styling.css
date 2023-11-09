@@ -15,3 +15,24 @@ body{
 /* .Title{
     background-color: #d5ee5b;
 } */
+.my-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.5s ease-in-out;
+  }
+  
+  .my-button:hover {
+    background-color: #0069d9;
+  }
+  
+  .my-button:active {
+    background-color: #0056b3;
+  }
