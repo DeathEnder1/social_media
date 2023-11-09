@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = Profiles
-        fields = ['username','email','password1','password2']
+        fields = ['username','first_name','last_name','password1','password2']
 
 class Profile_Form(forms.ModelForm):
     class Meta:

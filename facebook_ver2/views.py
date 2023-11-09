@@ -39,14 +39,22 @@ def register(request):
     form = MyUserCreationForm()
     if request.method=='POST':  
         form = MyUserCreationForm(request.POST)
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        username = request.POST['username'].lower()
+        checkusername = Profiles.objects.filter(username=username)
         if form.is_valid():
             user=form.save(commit=False)
             user.username= user.username.lower()
             user.save()
             login(request,user)
             return redirect('/')
-        else: 
-            messages.error(request, 'Something went wrong please try again.')
+        elif(password1 != password2): 
+            messages.error(request, 'Passwords do not match')
+        elif checkusername.count():
+            messages.error(request, 'User Already Exist')
+        else:
+            messages.error(request, 'Password must at least 8 charaters')
     return render(request, 'login_register.html', {'form':form})
 
 def logoutUser(request):

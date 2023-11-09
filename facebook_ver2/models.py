@@ -5,8 +5,8 @@ from django.core.validators import FileExtensionValidator
 # Create your models here.
 
 class Profiles(AbstractUser):
-    first_name = models.CharField(max_length=200, blank= True)
-    last_name =  models.CharField(max_length=200, blank= True)
+    first_name = models.CharField(max_length=200, blank= False)
+    last_name =  models.CharField(max_length=200, blank= False)
     follows= models.ManyToManyField("self", related_name="followed_by", symmetrical=False, blank=True)
     bio = models.TextField(default="No bio yet", max_length=300)
     email = models.EmailField(unique=True ,max_length=200)
