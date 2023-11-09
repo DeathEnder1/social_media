@@ -81,9 +81,13 @@ def setting(request):
     form=Profile_Form(instance=user)
     if request.method=="POST":
         form=Profile_Form(request.POST, request.FILES,instance=user)
-        if form.is_valid():
+        email = request.POST['email']
+        checkemail = Profiles.objects.filter(email=email)
+        if checkemail.count():
+            messages.error(request, 'Email Already Exist')
+        elif form.is_valid():
             form.save()
-            return redirect('/user_page/'+str(uid))
+            return redirect('/user_page/'+str(uid))    
     return render(request,'setting.html', {'form':form})
 
 @login_required(login_url='login')

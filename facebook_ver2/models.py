@@ -9,7 +9,7 @@ class Profiles(AbstractUser):
     last_name =  models.CharField(max_length=200, blank= False)
     follows= models.ManyToManyField("self", related_name="followed_by", symmetrical=False, blank=True)
     bio = models.TextField(default="No bio yet", max_length=300)
-    email = models.EmailField(unique=True ,max_length=200)
+    email = models.EmailField(max_length=200)
     avatar = models.ImageField(default="avatar.svg")
 
     REQUIRED_FIELDS = []

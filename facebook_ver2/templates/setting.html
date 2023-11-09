@@ -12,6 +12,15 @@
             {{field}}
         </div>
         {% endfor %}
+
+        {% if messages %}
+        <p class="error">
+            {% for message in messages %}
+            <span>{{ message }}</span>
+            {% endfor %}
+        </p>
+        {% endif %}
+        
         {{form.error}}
         <a href="{{request.META.HTTP_REFERER}}">Return</a>
         <input type="submit" value="submit">
