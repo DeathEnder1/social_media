@@ -24,15 +24,19 @@
                 </div>
             </div>
             <div class="item">
-                <form action="{% url 'search'%}" method="POST">
+                <form action="{% url 'search' %}" method="POST">
                     {% csrf_token %}
                     <div class="ui action left icon input">
-                        <input type="text" class="prompt" name="searched" placeholder="name of a friend...">
+                        <input type="text" class="prompt" name="searched" placeholder="Search...">
+                        <select name="search_type">
+                            <option value="username">Search by Username</option>
+                            <option value="post">Search by Post</option>
+                        </select>
                         <i class="search icon"></i>
                         <button class="ui button" type="submit">Search</button>
                     </div>
                 </form>
-            </div>
+            </div>            
             <div class="row gx">
                 <div class="avatar avatar--small" >
                     <img src="{{user.avatar.url}}" width="60" height="60">

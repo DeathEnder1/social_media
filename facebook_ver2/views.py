@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Block, Profiles,Post,Comment,Like
 from .forms import BlockForm, Profile_Form,MyUserCreationForm,PostForm,CommentForm
 from django.http import HttpResponse
+from django.db.models import Q
 
 # Create your views here.
 
@@ -178,16 +179,30 @@ def block_user(request, id):
     return redirect('')
 
 @login_required(login_url='login')
+#def search(request):
+#	if request.method == "POST":
+#     
+#		searched= request.POST['searched']
+#		profile = Profiles.objects.filter(username__contains=searched)
+#	
+#		return render(request, 
+#		'search.html', 
+#		{'searched':searched,
+#		'profile':profile})
+#	else:
+#		return render(request, 
+#		'search', {})
+
 def search(request):
-	if request.method == "POST":
-     
-		searched= request.POST['searched']
-		profile = Profiles.objects.filter(username__contains=searched)
-	
-		return render(request, 
-		'search.html', 
-		{'searched':searched,
-		'profile':profile})
-	else:
-		return render(request, 
-		'search', {})
+    if request.method == "POST":
+        searched = request.POST['searched']
+        search_type = request.POST.get('search_type', 'username')  # Sử dụng 'username' mặc định nếu không có giá trị được chọn
+
+        if search_type == 'username':
+            profiles = Profiles.objects.filter(username__contains=searched)
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
+        elif search_type == 'post':
+            posts = Post.objects.filter(Q(content__contains=searched) | Q(author=searched))
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
+    else:
+        return render(request, 'search.html', {})

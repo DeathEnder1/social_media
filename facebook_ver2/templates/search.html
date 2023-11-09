@@ -1,15 +1,38 @@
 {% extends "base.html" %}
 
 {% block content%}
-    <center>
+<!--    <center>
         {% if searched %}
         <h1>You Serched For {{ searched }}</h1>
         <br/>
         {% for profiles in profile %}
-            <a href="{%url 'user_page' user.id %}">{{ profiles }}</a><br/>
+            <a href="{%url 'user_page' profiles.id %}">{{ profiles }}</a><br/>
         {% endfor %}
         {% else %}
 		<h1>Hey! You Forgot To Search For A Friends!!!! </h1>
         {% endif %}
+-->
+<center>
+    {% if searched %}
+        {% if search_type == 'username' %}
+            <h1>You Searched for {{ searched }} by Username</h1>
+            <br/>
+            {% for profile in profiles %}
+                <a href="{% url 'user_page' profile.id %}">{{ profile }}</a><br/>
+            {% endfor %}
+        {% elif search_type == 'post' %}
+            <h1>You Searched for {{ searched }} by Post</h1>
+            <br/>
+            {% for post in posts %}
+            <h2>{{ post.content }}</h2> <!-- Hiển thị nội dung của bài viết -->
+            <p>Posted by: <a href="{% url 'user_page' post.author_id %}">{{ post.author }}</a></p> <!-- Hiển thị tên người đăng bài viết -->
+            <hr>
+            {% endfor %}
+
+        {% endif %}
+    {% else %}
+        <h1>Hey! You Forgot to Search!!</h1>
+    {% endif %}
+</center>
 
 {% endblock %}
