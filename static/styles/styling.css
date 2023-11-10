@@ -441,3 +441,23 @@
 .padding .button:active{
     background-color: #eaeaea;
 }
+
+.post-actions > div{
+    line-height: 1em;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    display: flex;
+}
+.post-actions .like:hover{
+    color: #e0245e;
+    transition-duration: .2s;
+}
+
+.post-actions .like:hover .svg-span{
+    color: #e0245e;
+    background-color: #f3e3eb;
+    box-shadow: 0 0 0 3px #f3e3eb;
+    transition-duration: .2s;
+    cursor: pointer;
+}

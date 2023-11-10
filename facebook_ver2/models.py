@@ -5,11 +5,11 @@ from django.core.validators import FileExtensionValidator
 # Create your models here.
 
 class Profiles(AbstractUser):
-    first_name = models.CharField(max_length=200, blank= True)
-    last_name =  models.CharField(max_length=200, blank= True)
+    first_name = models.CharField(max_length=200, blank= False)
+    last_name =  models.CharField(max_length=200, blank= False)
     follows= models.ManyToManyField("self", related_name="followed_by", symmetrical=False, blank=True)
     bio = models.TextField(default="No bio yet", max_length=300)
-    email = models.EmailField(unique=True ,max_length=200)
+    email = models.EmailField(max_length=200)
     avatar = models.ImageField(default="avatar.svg")
 
     REQUIRED_FIELDS = []
@@ -21,31 +21,21 @@ class Post(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Profiles, on_delete=models.CASCADE, related_name="posts")
-
-    
-    def given_likes(self):
-        likes = self.like_set.all()
-        total_liked = 0
-        for i in likes:
-            if i.value == 'Like':
-                total_liked += 1
-        return total_liked
-    
-    def receive_likes(self):
-        posts = self.posts.all()
-        total_liked = 0
-        for i in posts:
-            total_liked += i.liked.all().count()
-        return total_liked
-
-    def num_likes(self):
-        return self.liked.all().count()
     
     def num_comments(self):
         return self.comment_set.all().count()
     
     class Meta:
         ordering = ('-created',)
+
+class ChatMessage(models.Model):
+    body = models.TextField()
+    msg_sender = models.ForeignKey(Profiles,on_delete=models.CASCADE,related_name="msg_sender")
+    msg_receiver = models.ForeignKey(Profiles,on_delete=models.CASCADE,related_name="msg_receiver")
+    seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.body
 
 class Comment(models.Model):
     user = models.ForeignKey(Profiles,on_delete=models.CASCADE)
@@ -54,18 +44,18 @@ class Comment(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+
+class Block(models.Model):
+    blocker = models.ForeignKey(Profiles, related_name='blocker', on_delete=models.CASCADE)
+    blocked_user = models.ForeignKey(Profiles, related_name='blocked_user', on_delete=models.CASCADE)
+    
 LIKE_CHOICES = (
     ('Like','Like'),
     ('Unlike','Unlike'),
 )
-
 class Like(models.Model):
     user = models.ForeignKey(Profiles,on_delete=models.CASCADE)
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
     value = models.CharField(choices=LIKE_CHOICES,max_length=20)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
-class Block(models.Model):
-    blocker = models.ForeignKey(Profiles, related_name='blocker', on_delete=models.CASCADE)
-    blocked_user = models.ForeignKey(Profiles, related_name='blocked_user', on_delete=models.CASCADE)

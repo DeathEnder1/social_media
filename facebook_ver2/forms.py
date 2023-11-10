@@ -1,12 +1,12 @@
 from django import forms
-from .models import Profiles,Comment,Post
+from .models import Profiles,Comment,Post, ChatMessage
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = Profiles
-        fields = ['username','email','password1','password2']
+        fields = ['username','first_name','last_name','password1','password2']
 
 class Profile_Form(forms.ModelForm):
     class Meta:
@@ -34,3 +34,9 @@ class BlockForm(forms.Form):
         choices=ACTIONS,
         widget=forms.RadioSelect,
     )
+    
+class ChatMessageForm(forms.ModelForm):
+    body = forms.CharField(widget=forms.TextInput(attrs={'width':'300px','placeholder':'Type message here...'}))
+    class Meta:
+        model = ChatMessage
+        fields = ['body']

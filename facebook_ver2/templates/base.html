@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block tile %}{%endblock%}</title>
-    {% load static %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/7.0.3/pusher.min.js"></script>
     <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
     <link rel="icon" href="/static/styles/favicon.ico">
+    
 </head>
 <body>
+ 
     <div class = "nav_container">
         <div class="left">
             <a href="/" class="">
@@ -18,7 +21,11 @@
             <form action="{% url 'search'%}" method="POST">
                 {% csrf_token %}
                 <div class="">
-                    <input type="text" class="prompt" name="searched" placeholder="name of a friend...">
+                    <input type="text" class="prompt" name="searched" placeholder="Search...">
+                        <select name="search_type">
+                            <option value="username">Search by Username</option>
+                            <option value="post">Search by Post</option>
+                        </select>
                     <i class="search icon"></i>
                     <button class="" type="submit">Search</button>
                 </div>
@@ -26,8 +33,10 @@
         </div>
         <div class="right">
             {% if request.user.is_authenticated %}
+            <a href="/chat_room">Messages</a>
             <div class="avatar_container">
                 <a href="/user_page/{{request.user.id}}" >
+                    <p>{{request.user.first_name}} {{request.user.last_name}}</p>
                     <img src="{{request.user.avatar.url}}" class="avatar_image">
                 </a>
             </div>
@@ -41,6 +50,49 @@
             {%endif%}
         </div>
     </div>
-    {% block content %}{% endblock %}
+    {% block content %}{% endblock %}   
+    <script>
+        $(document).ready(function(){
+            let display=false
+            $('.like-form').submit(function(e){
+                e.preventDefault()
+    
+                const post_id = $(this).attr('id')
+                
+                const LikeText = $(`.like-btn ${post_id}`).text()
+                const trim =$.trim(LikeText)
+    
+                const url = $(this).attr('action')
+
+                let res;
+                const like= $(`like-count${post_id}`).text()
+                const trimCount = parseInt(like)
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id':post_id,
+                    },
+                    success: function(response){
+                        console.log('good')
+                        if (trim =='Unlike'){
+                            $(`.like-btn ${post_id}`).text('Like')
+                            res =trimCount-1
+                        } else{
+                            $(`.like-btn ${post_id}`).text('Unlike')
+                            res =trimCount+1
+                        }
+                        const like= $(`like-count${post_id}`).text(res)
+                    },
+                    error: function(response){
+                        console.log('error',response)
+                    }        
+                })
+    
+            });
+        });
+    </script>
 </body>
 </html>

@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="post_content">
-                {{article.content}}
+                {{article.content|linebreaks}}
             </div>    
             <div>
                 {% if article.image != '' %}
@@ -35,7 +35,18 @@
             </div>
             <div class="like_cmt">
                 <div class="box">
-                    <a href="">Like</a>
+                    <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value={{article.id}}>
+                        <button type="submit"  class="like-btn{{article.id}}">
+                            {% if request.user in article.liked.all %}
+                                Unlike 
+                            {% else %}
+                                Like
+                            {% endif %}
+                        </button>
+                        <div class="like-count{{article.id}}">{{article.liked.count}}</div>
+                    </form>
                 </div>
                 <div class="box">
                     <a href="">Comment</a>
@@ -51,11 +62,3 @@
 {% endif %}
 
 {%endblock content%}
-
-{%block script%}
-<script>
-$(document).ready(function(){
-    console.log('Working')
-})
-</script>
-{%endblock script%}
