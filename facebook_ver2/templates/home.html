@@ -37,12 +37,11 @@
                 <div class="box">
                     <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form">
                         {% csrf_token %}
-                        <input type="hidden" name="post_id" value={{article.id}}>
-                        <button type="submit"  class="like-btn{{article.id}}">
-                            {% if request.user in article.liked.all %}
-                                Unlike 
+                        <button type="submit" name="post_id" value={{article.id}}  class="like-btn{{article.id}}">
+                            {% if request.user not in article.liked.all %}
+                                Like 
                             {% else %}
-                                Like
+                                Unlike
                             {% endif %}
                         </button>
                         <div class="like-count{{article.id}}">{{article.liked.count}}</div>
