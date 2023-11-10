@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div>
+    <h1>Chat Messenger</h1>
+</div>
+<div>
+<p>@{{request.user.username}}</p>
+</div>
+<div>
+    Message
+    {% for follow in follows %}
+    <!-- <div>
+        <img src="{{follow.avatar.url}}" alt=" follows profile avatar">
+    </div> -->
+    <a href="{% url 'chat_details' follow.id %}">
+        <div>
+            <h5>{{follow.username}}</h5>
+        </div>
+        <div class="msg">
+            0
+        </div>
+    </a>
+    {% endfor %}
+</div>
+<script>
+    setInterval(getNotification, 1000)
+    function getNotification(){
+        let url = "{% url 'chat_notification' %}"
+
+        fetch(url)
+        .then(response=>response.json())
+        .then(data=>{
+            console.log(data)
+            let chat_notification_btn = document.getElementsByClassName("msg")
+            for(let i = 0; i<data.length;i++)
+            {   
+                chat_notification_btn[i].innerHTML = data[i]
+            }
+        })
+        .catch(error=>console.log(error))
+    }
+</script>
+{% endblock content %}
