@@ -7,40 +7,58 @@
     <title>{% block tile %}{%endblock%}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
-    <link rel="icon" href="/static/styles/favicon.ico">
+    <!-- <link rel="icon" href="/static/styles/favicon.ico"> -->
+
+   
 </head>
 <body>
-    <div class = "nav_container">
-        <div class="left">
-            <a href="/" class="">
-                <img src="/static/styles/logo.png" class="logo_image">
-            </a>
-            <form action="{% url 'search'%}" method="POST">
-                {% csrf_token %}
-                <div class="">
-                    <input type="text" class="prompt" name="searched" placeholder="name of a friend...">
-                    <i class="search icon"></i>
-                    <button class="" type="submit">Search</button>
-                </div>
-            </form>
-        </div>
-        <div class="right">
-            {% if request.user.is_authenticated %}
-            <div class="avatar_container">
-                <a href="/user_page/{{request.user.id}}" >
-                    <img src="{{request.user.avatar.url}}" class="avatar_image">
+    <!-- NAVBAR -->
+    <nav>
+        <div class = "nav_container">
+            <!-- LEFT-NAV -->
+            <div class="left">
+                <!-- LOGO-WEB-PAGE -->
+                <a href="/">
+                    <img src="/static/styles/Logo.png" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;">               
                 </a>
+                <!-- SEARCH-BOX -->
+                <form action="{% url 'search'%}" method="POST">
+                    {% csrf_token %}
+                    <div class="search-bar">
+                        <ion-icon name="search-outline"></ion-icon>
+                        <input type="search" class="" name="searched" placeholder="finding bla bla" >
+                        <!-- <button class="Search-button" type="submit"></button> -->
+                    </div>
+                </form>
             </div>
-                <a href="{% url 'logout' %}" class="login_logout" >
+            
+            <!-- RIGHT-NAV -->
+            <div class="right">
+                <!-- *ID-AVATAR-USER-PROFILE -->
+                {% if request.user.is_authenticated %}
+                <div class="avatar_container">
+                    <a href="/user_page/{{request.user.id}}" >
+                        <img src="{{request.user.avatar.url}}" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;">
+                    </a>
+                </div>
+
+                <!-- MENU-LOGIN/LOGOUT -->
+                <a href="{% url 'logout' %}" class="but" >
                     Logout
                 </a>
-            {%else%}
-            <a href="{% url 'login'%}" class="login_logout">
-                Login
-            </a>
-            {%endif%}
+                {%else%}
+                <a href="{% url 'login'%}" class="but">
+                    Login
+                </a>
+                {%endif%}
+            </div>
+    
         </div>
-    </div>
+    </nav>
     {% block content %}{% endblock %}
 </body>
+   
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </html>
