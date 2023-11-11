@@ -12,6 +12,9 @@ class Profiles(AbstractUser):
     avatar = models.ImageField(default="avatar.svg")
 
     REQUIRED_FIELDS = []
+    
+    def get_blocked_users(self):
+        return Profiles.objects.filter(blocked_user__blocker=self)
 
 class Post(models.Model):
     content = models.TextField()
