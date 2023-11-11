@@ -57,6 +57,7 @@ nav .nav_container .left {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-left: 10px;
 }
 nav .nav_container .right {
     display: flex;
@@ -293,7 +294,7 @@ main .container .left .sidebar-left {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--color-danger);
+    background: white;
     padding: 0.4rem var(--card-padding);
     border-radius: var(--border-radius);
 }
@@ -347,7 +348,6 @@ main .container .left .sidebar-left {
 /* Right */
 main .container .right {
     height: max-content;
-    position: sticky;
     top: var(--sticky-top-right);
     bottom: 0;
 }
@@ -407,6 +407,7 @@ main .container .right {
     height:  100vh;
     padding: 20px;
     z-index: 2;
+    background: var(--color-white);
 }
 .profile-home {
     position: absolute;
@@ -458,4 +459,38 @@ main .container .right {
 .profile .avatar span {
     font-size: 0.938rem;
     font-weight: 400;
+}
+
+.profile-sidebar .about {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+.profile-sidebar .about .box {
+    text-align: center;
+}
+.profile-sidebar .about .box h3 {
+    font-size: 1rem;
+    font-weight: 500;
+}
+.profile-sidebar .about .box span {
+    font-size: 0.938rem;
+    font-weight: 400;
+}
+
+.profile-sidebar .menu a {
+    width: 100%;
+    font-size: 1rem;
+    color: var(--color-dark);
+    display: flex;
+    align-items: center;
+    line-height: 40px;
+}
+.profile-sidebar .menu a:hover,
+.menu .active {
+    color: var(--color-danger);
+}
+.profile-sidebar .menu .icon {
+    margin-right: 1rem;
+    font-size: 20px;
 }

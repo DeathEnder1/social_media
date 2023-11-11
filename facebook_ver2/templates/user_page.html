@@ -30,13 +30,34 @@
                 <span>Posts</span>
             </div>
             <div class="box">
-                <h3></h3>
-                <span></span>
+                <h3>{{user.followed_by.count}}</h3>
+                <span>Followed</span>
             </div>
             <div class="box">
-                <h3></h3>
-                <span>Posts</span>
+                <h3>{{user.follows.count}}</h3>
+                <span>Following</span>
             </div>
+        </div>
+
+        <div class="menu">
+            <a href="#" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Posts
+            </a>
+            <a href="#" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Message
+            </a>
+            <a href="#" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                logout
+            </a>
         </div>
 
     </div>
@@ -136,7 +157,7 @@
                     <div class="header">
                         <div class="user_name">
                             <a href="/user_page/{{item.author.id}}" class="name" >
-                                <img src="{{item.author.avatar.url}}" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;"> 
+                                <img src="{{item.author.avatar.url}}" class="photo_image"> 
                             </a> 
                             <div>
                                 <a href="/user_page/{{item.author.id}}" class="name">{{item.author.first_name}} {{item.author.last_name}}</a>

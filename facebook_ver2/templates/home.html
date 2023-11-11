@@ -12,8 +12,7 @@
             <a href="/user_page/{{request.user.id}}" class="sidebar-profile">
                 <div class="profile_avatar">
                     <img src="{{request.user.avatar.url}}" class="photo_image">
-                    <h4>{{item.author.first_name}} {{item.author.last_name}}</h4>
-                    <p class="">@{{request.user}}</p>
+                    <p class="">{{request.user.first_name}}{{request.user.last_name}}<br>@{{request.user}}</p>
                 </div>
             </a>
     
@@ -22,11 +21,11 @@
                 <a href="" class="menu-items ">
                     <span><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
                 </a>
-                <a href="" class="menu-items ">
+                <a href="#" class="menu-items ">
                     <span><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
                 </a>
-                <a href="" class="menu-items ">
-                    <span><ion-icon name="chatbubbles-outline">Messages</ion-icon></span><h3>Messages</h3>
+                <a href="/chat_room" class="menu-items ">
+                    <span><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
                 </a>
                 <a href="{% url 'logout' %}" class="menu-items ">
                     <span><ion-icon name="log-out-outline"></ion-icon></span><h3>Logout</h3>
@@ -85,22 +84,18 @@
                 <!-- INTERACT-POST -->
                 <div class="interact">
                     <div class="interact_button">
-                        <span><ion-icon name="heart-outline"></ion-icon></span>
+                        <a href="">
+                            <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <button type="submit"  class="like-btn{{article.id}}">
+                                    Like
+                                </button>
+                                <div class="like-count{{article.id}}">{{article.liked.count}}</div>
+                            </form>
+                        </a>
                         <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
                         <span><ion-icon name="share-social-outline"></ion-icon></span>
-
-                        <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form">
-                            {% csrf_token %}
-                            <input type="hidden" name="post_id" value={{article.id}}>
-                            <button type="submit"  class="like-btn{{article.id}}">
-                                {% if request.user in article.liked.all %}
-                                    Unlike 
-                                {% else %}
-                                    Like
-                                {% endif %}
-                            </button>
-                            <div class="like-count{{article.id}}">{{article.liked.count}}</div>
-                        </form>
                     </div>
 
                     <div class="bookmark">
