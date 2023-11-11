@@ -24,7 +24,7 @@
                 <a href="/following" class="menu-items">
                     <span><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
                 </a>
-                <a href="" class="menu-items">
+                <a href="/chat_room" class="menu-items">
                     <span><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
                 </a>
                 <a href="{% url 'logout' %}" class="menu-items">
@@ -40,8 +40,12 @@
             <!-- CREATE POST BUTTON -->
             <form class="create_post">
                 <a class="profile_avatar" href="/user_page/{{request.user.id}}">
-                    <img src="{{request.user.avatar.url}}" class="photo_image">
+                    <div>
+                        <img src="{{request.user.avatar.url}}" class="photo_image">
+                    </div>
+
                 </a>
+
                 <input type="text" placeholder="What d fuk on your brain?" id="create-post">
                 <input type="submit" value="Create post" class="btn btn-primary" style="margin-right: 1rem;">
             </form>
@@ -51,7 +55,7 @@
             <!-- POST -->
             <div class="post" >
                 <!-- INFOR'S POST -->
-                <div class="header">
+                <div class="post_header">
                     <div class="user_name">
                         <a href="/user_page/{{article.author.id}}" class="name" >
                             <img src="{{article.author.avatar.url}}" class="photo_image""> 
