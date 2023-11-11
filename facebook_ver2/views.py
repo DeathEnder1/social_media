@@ -15,6 +15,21 @@ from django.urls import reverse_lazy, reverse
 
 def home(request):
     if request.user.is_authenticated:
+        if "submit_commentform" in request.POST:
+            commentform = CommentForm(request.POST)
+            if commentform.is_valid():
+                formin = commentform.save(commit=False)
+                formin.user = Profiles.objects.get(id = request.user.id)
+                formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                formin.save()
+                response_data = {
+                    'comment': {
+                        'user': formin.user.username,
+                        'body': formin.body,
+                        }
+                    }
+                return JsonResponse(response_data)
+            
         blocked_users= Block.objects.filter(blocker=request.user).values_list('blocked_user', flat=True)
         articles= Post.objects.exclude(author__in=blocked_users)
         context = {
@@ -99,6 +114,7 @@ def setting(request):
 @login_required(login_url='login')
 def user_page(request,id):
     user = Profiles.objects.get(id=id)   
+    # user2 = Profiles.objects.get(id = request.user.id)
     st = Post.objects.filter(author = id)
     postform =PostForm()
     commentform = CommentForm()
@@ -112,6 +128,7 @@ def user_page(request,id):
             current_user.follows.remove(user)
         else:
             current_user.follows.add(user)
+        return redirect('/user_page/'+str(id))
         
 
     if "submit_postform" in request.POST:
@@ -120,19 +137,26 @@ def user_page(request,id):
             formin = postform.save(commit=False)
             formin.author = user
             formin.save()
-            # postform = PostForm()
             p_add = True
             return redirect('/user_page/'+str(id))
         
+        
     if "submit_commentform" in request.POST:
-        commentform = CommentForm(data=request.POST)
+        commentform = CommentForm(request.POST)
         if commentform.is_valid():
             formin = commentform.save(commit=False)
             formin.user = user
             formin.post = Post.objects.get(id=request.POST.get('post_id'))
-            # commentform = CommentForm()
             formin.save()
-            
+            p_add = True
+            response_data = {
+            'comment': {
+                'user': formin.user.username,
+                'body': formin.body,
+                }
+            }
+            return JsonResponse(response_data)
+    
     
     context={'user':user,
              'st':st,

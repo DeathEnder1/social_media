@@ -59,13 +59,13 @@
     
                 const post_id = $(this).attr('id')
                 
-                const LikeText = $(`.like-btn ${post_id}`).text()
+                const LikeText = $(`.like-btn${post_id}`).text()
                 const trim =$.trim(LikeText)
     
                 const url = $(this).attr('action')
 
                 let res;
-                const like= $(`like-count${post_id}`).text()
+                const like= $(`.like-count${post_id}`).text()
                 const trimCount = parseInt(like)
 
                 $.ajax({
@@ -77,20 +77,47 @@
                     },
                     success: function(response){
                         console.log('good')
-                        if (trim =='Unlike'){
-                            $(`.like-btn ${post_id}`).text('Like')
+                        if (trim ==='Unlike'){
+                            $(`.like-btn${post_id}`).text('Like')
                             res =trimCount-1
                         } else{
-                            $(`.like-btn ${post_id}`).text('Unlike')
+                            $(`.like-btn${post_id}`).text('Unlike')
                             res =trimCount+1
                         }
-                        const like= $(`like-count${post_id}`).text(res)
+                        const like= $(`.like-count${post_id}`).text(res)
                     },
                     error: function(response){
                         console.log('error',response)
                     }        
                 })
     
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#comment-form').submit(function(e) {
+                e.preventDefault();
+                const post_id = $(this).attr('id')
+                const formData = $(this).serialize();
+                $.ajax({
+                    url: '/', 
+                    type: 'POST',
+                    data: ({
+                        formData,
+                        'post_id':post_id,
+                    }),
+                    success: function(response) {
+                        $('#comment-form input[name=body]').val(''); 
+    
+                        $('#comments-list').append(
+                            '<p> ${comment.user}: ${comment.body} </p>'
+                        );
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
             });
         });
     </script>
