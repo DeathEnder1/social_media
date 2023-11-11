@@ -12,11 +12,26 @@ import pusher
 from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
+        user = Profiles.objects.get(id=request.user.id)
         articles= Post.objects.all()
+        blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
+        articles= Post.objects.exclude(author__in=blocked_users)
         context = {
             'articles':articles
         }
         return render(request, 'home.html',context)
+    else: 
+        return redirect('/login')
+    
+def following(request):
+    if request.user.is_authenticated:
+        user = Profiles.objects.get(id=request.user.id)
+        articles= Post.objects.all()
+        follows = user.follows.all()
+        context = {
+            'articles':articles
+        }
+        return render(request, 'following.html',context)
     else: 
         return redirect('/login')
 
@@ -145,7 +160,9 @@ def block_user(request, id):
     if request.method == 'POST':
         form = BlockForm(request.POST)
         if form.is_valid():
-            blocker = request.user
+            aid = request.session.get('_auth_user_id')
+            blocker = Profiles.objects.get(id=aid)
+            follows = blocker.follows.all()
             blocked_user = Profiles.objects.get(id=id)  # Lấy thông tin người bị block từ id truyền vào
             action = form.cleaned_data['action']
             if action == 'block':
