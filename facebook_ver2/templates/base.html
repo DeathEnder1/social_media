@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
     <!-- <link rel="icon" href="/static/styles/favicon.ico"> -->
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/7.0.3/pusher.min.js"></script>
+
    
 </head>
 <body>
@@ -19,14 +22,19 @@
             <div class="left">
                 <!-- LOGO-WEB-PAGE -->
                 <a href="/">
-                    <img src="/static/styles/Logo.png" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;">               
+                    <img src="/static/styles/Logo.png" class="photo_image"> Facebook v2       
                 </a>
                 <!-- SEARCH-BOX -->
                 <form action="{% url 'search'%}" method="POST">
                     {% csrf_token %}
+
                     <div class="search-bar">
                         <ion-icon name="search-outline"></ion-icon>
-                        <input type="search" class="" name="searched" placeholder="finding bla bla" >
+                        <input type="text" class="prompt" name="searched" placeholder="Search...">
+                        <select name="search_type">
+                            <option value="username">Search by Username</option>
+                            <option value="post">Search by Post</option>
+                        </select>
                         <!-- <button class="Search-button" type="submit"></button> -->
                     </div>
                 </form>
@@ -36,18 +44,20 @@
             <div class="right">
                 <!-- *ID-AVATAR-USER-PROFILE -->
                 {% if request.user.is_authenticated %}
+                <a href="/chat_room">Messages</a>
+
                 <div class="avatar_container">
                     <a href="/user_page/{{request.user.id}}" >
-                        <img src="{{request.user.avatar.url}}" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;">
+                        <img src="{{request.user.avatar.url}}" class="photo_image">
                     </a>
                 </div>
 
                 <!-- MENU-LOGIN/LOGOUT -->
-                <a href="{% url 'logout' %}" class="but" >
+                <a href="{% url 'logout' %}" class="btn btn-primary" >
                     Logout
                 </a>
                 {%else%}
-                <a href="{% url 'login'%}" class="but">
+                <a href="{% url 'login'%}" class="btn btn-primary">
                     Login
                 </a>
                 {%endif%}
@@ -56,6 +66,51 @@
         </div>
     </nav>
     {% block content %}{% endblock %}
+
+    <script>
+        $(document).ready(function(){
+            let display=false
+            $('.like-form').submit(function(e){
+                e.preventDefault()
+
+                const post_id = $(this).attr('id')
+
+                const LikeText = $(`.like-btn${post_id}`).text()
+                const trim =$.trim(LikeText)
+
+                const url = $(this).attr('action')
+
+                let res;
+                const like= $(`.like-count${post_id}`).text()
+                const trimCount = parseInt(like)
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id':post_id,
+                    },
+                    success: function(response){
+                        console.log('good')
+                        if (trim =='Unlike'){
+                            $(`.like-btn${post_id}`).text('Like')
+                            res =trimCount-1
+                        } else{
+                            $(`.like-btn${post_id}`).text('Unlike')
+                            res =trimCount+1
+                        }
+                        const like= $(`.like-count${post_id}`).text(res)
+                    },
+                    error: function(response){
+                        console.log('error',response)
+                    }        
+                })
+
+            });
+        });
+    </script>
+
 </body>
    
 

@@ -1,13 +1,15 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Profiles,Post,Comment,Like, Block
-from .forms import Profile_Form,MyUserCreationForm,PostForm,CommentForm, BlockForm
-from django.http import HttpResponse
-
-# Create your views here.
-
+from django.views.decorators.csrf import csrf_exempt
+from .models import *
+from .forms import *
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+import json
+from django.db.models import Q
+import pusher
+from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
         articles= Post.objects.all()
@@ -37,6 +39,10 @@ def login_page(request):
 
 def register(request):
     form = MyUserCreationForm()
+    password1 = request.POST.get('password1',False)
+    password2 = request.POST.get('password2',False)
+    username = request.POST.get('username',False)
+    checkusername = Profiles.objects.filter(username=username)
     if request.method=='POST':  
         form = MyUserCreationForm(request.POST)
         if form.is_valid():
@@ -45,8 +51,12 @@ def register(request):
             user.save()
             login(request,user)
             return redirect('/')
-        else: 
-            messages.error(request, 'Something went wrong please try again.')
+        elif(password1 != password2): 
+            messages.error(request, 'Passwords do not match')
+        elif checkusername.count():
+            messages.error(request, 'User Already Exist')
+        else:
+            messages.error(request, 'Password must at least 8 charaters')
     return render(request, 'login_register.html', {'form':form})
 
 def logoutUser(request):
@@ -73,7 +83,11 @@ def setting(request):
     form=Profile_Form(instance=user)
     if request.method=="POST":
         form=Profile_Form(request.POST, request.FILES,instance=user)
-        if form.is_valid():
+        email = request.POST['email']
+        checkemail = Profiles.objects.filter(email=email)
+        if checkemail.count():
+            messages.error(request, 'Email Already Exist')
+        elif form.is_valid():
             form.save()
             return redirect('/user_page/'+str(uid))
     return render(request,'setting.html', {'form':form})
@@ -146,11 +160,213 @@ def block_user(request, id):
 
 @login_required(login_url='login')
 def search(request):
-	if request.method == "POST":
+    if request.method == "POST":
+        searched = request.POST['searched']
+        search_type = request.POST.get('search_type', 'username')  # Sử dụng 'username' mặc định nếu không có giá trị được chọn
 
-		searched= request.POST['searched']
-		profile = Profiles.objects.filter(username=searched)
+        if search_type == 'username':
+            profiles = Profiles.objects.filter(username__contains=searched)
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
+        elif search_type == 'post':
+            posts = Post.objects.filter(content__contains=searched)
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
+    else:
+        return render(request, 'search.html', {})
+    
+@csrf_exempt
+@login_required(login_url='login')
+def like_unlike_post(request):
+    user =request.user.id
+    if request.method=="POST":
+        post_id= request.POST.get('post_id')
+        post= Post.objects.get(id=post_id)
+        profile= Profiles.objects.get(id=user)
 
-		return render(request, 'search.html', {'searched':searched,'profile':profile})
-	else:
-		return render(request, 'search', {})
+        if profile in post.liked.all():
+            post.liked.remove(user)
+        else:
+            post.liked.add(user)
+
+        like, created= Like.objects.get_or_create(user=profile, post_id=post_id)
+
+        if not created:
+            if like.value=='Like':
+                like.value='Unlike'
+            else: 
+                like.value='Like'
+        else:
+            like.value='Like'
+
+            post.save()
+            like.save()
+
+        data ={
+            'value': like.value,
+            'likes': post.liked.all().count()
+        }
+
+        return JsonResponse(data, safe=False)
+
+    return redirect('/')
+
+@login_required(login_url='login')
+
+def chat_room(request):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.all()
+
+    context = {'user':user,
+
+               'follows':follows}
+
+    return render(request,"chat_room.html",context)
+
+
+
+
+@login_required(login_url='login')
+
+def chat_details(request,id):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.get(id=id)
+
+    form = ChatMessageForm()
+
+    chats = ChatMessage.objects.all()
+
+    receive_chats = ChatMessage.objects.filter(msg_sender=follows,msg_receiver=user,seen=False)
+
+    receive_chats.update(seen=True)
+
+    receive_chats_json = [
+
+        {"id": chat.id, "body": chat.body} for chat in receive_chats
+
+    ]
+
+    if request.method == "POST":
+
+        form = ChatMessageForm(request.POST)
+
+
+
+
+        if form.is_valid():
+
+            chat_message = form.save(commit=False)
+
+            chat_message.msg_sender = user
+
+            chat_message.msg_receiver = follows
+
+            chat_message.save()
+
+            return redirect('chat_details',id =follows.id)
+
+
+
+
+    context = {'follows':follows,
+
+               'form':form,
+
+               'user':user,
+
+               'chats':chats,
+
+               "receive_chats": json.dumps(receive_chats_json)}
+
+    request.session['last_received_message'] = receive_chats.last().id if receive_chats.exists() else None
+
+    return render(request,"chat_details.html",context)
+
+
+
+
+@login_required(login_url='login')
+
+def sent_messages(request,id):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.get(id=id)
+
+    data = json.loads(request.body)
+
+    new_chat = data["msg"]
+
+    new_chat_message = ChatMessage.objects.create(body = new_chat,msg_sender = user,msg_receiver = follows,seen = False)
+
+    pusher_client = pusher.Pusher(
+
+        app_id = "1695930",
+
+        key = "62781415eb4ada65ca96",
+
+        secret = "c41bf0167df3de120779",
+
+        cluster = "ap1",
+
+        ssl=True)
+
+    pusher_client.trigger('my-channel', 'my-event', {'msg': new_chat_message.body})
+
+    return JsonResponse(new_chat_message.body,safe=False)
+
+
+
+
+@login_required(login_url='login')
+
+def receive_messages(request,id):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.get(id=id)
+
+    chats = ChatMessage.objects.filter(msg_sender=follows,msg_receiver=user)
+
+    last_received_message = request.session.get('last_received_message')
+
+    arr = [{"id": chat.id, "body": chat.body} for chat in chats if chat.id != last_received_message]
+
+    return JsonResponse(arr, safe=False)
+
+
+
+
+
+
+
+@login_required(login_url='login')
+
+def chat_notification(request):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.all()
+
+    arr = []
+
+    for follow in follows:
+
+        chats = ChatMessage.objects.filter(msg_sender_id=follow,msg_receiver=user,seen = False)
+
+        arr.append(chats.count())
+
+    return JsonResponse(arr,safe=False)
+

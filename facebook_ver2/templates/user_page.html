@@ -3,6 +3,44 @@
 
 {% block tile %}{{user.username}}{% endblock tile %}
 {% block content %}
+
+
+    <div class="profile-sidebar">
+        <div class="profile">
+            <div class="avatar">
+                <img src="{{user.avatar.url}}" >
+            </div>
+
+            <div class="name">
+                <h1>
+                {%if user.first_name%}
+                    <p>{{user.first_name}} {{user.last_name}} </p>
+                {%else%}
+                    <p>No name yet </p>
+                {% endif %}
+                </h1>
+            </div>
+
+            <span>@{{user.username}}</span>
+        </div>
+
+        <div class="about">
+            <div class="box">
+                <h3>...</h3>
+                <span>Posts</span>
+            </div>
+            <div class="box">
+                <h3></h3>
+                <span></span>
+            </div>
+            <div class="box">
+                <h3></h3>
+                <span>Posts</span>
+            </div>
+        </div>
+
+    </div>
+    <div class="profile-home"></div>
     
     <!-- PROFILE -->
     <div class="profile">
@@ -60,91 +98,107 @@
             {%endif%}
             <p>Followers: {{user.followed_by.count}}</p><br>
             <p>Following: {{user.follows.count}}</p>
+
+            <div class="bio_container">
+                <p>{{user.bio}}</p>
+            </div>
+            {% if request.user == user %}
+            <hr class="line">
         </div>
     </div>
 
-    <div class="bio_container">
-        <p>{{user.bio}}</p>
-    </div>
-    {% if request.user == user %}
-    <hr class="line">
-    
-    <!-- PROFILE-CREATE_POST -->
-    <div class="create_container">
-        <div class="box">
-            <form action="" method="POST" enctype="multipart/form-data">
-                <p style="font-weight: bold; font-size:25px;">Create a post</p>
-                {% csrf_token %}
-                <p>
-                    <textarea name="content" class="input_content" placeholder="What's on your mind?" required></textarea>
-                </p>
-                <p>
-                    {{postform.image}}
-                </p>
-                <div>
-                    <button type="submit" class="btn btn-primary" name="submit_postform">
-                        Create post
-                    </button>
-                </div>
-            </form>
+    <div class="container">
+        <!-- PROFILE-CREATE_POST -->
+        <div class="create_container">
+            <div class="box">
+                <form action="" method="POST" enctype="multipart/form-data">
+                    <p style="font-weight: bold; font-size:25px;">Create a post</p>
+                    {% csrf_token %}
+                    <p>
+                        <textarea name="content" class="input_content" placeholder="What's on your mind?" required></textarea>
+                    </p>
+                    <p>
+                        {{postform.image}}
+                    </p>
+                    <div>
+                        <button type="submit" class="btn btn-primary" name="submit_postform">
+                            Create post
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-    {% endif %}
-    <div>
-        {% for item in st %}
-        <div class="post_container">
-            <div class="post" >
-                <div class="header">
-                    <div class="user_name">
-                        <a href="/user_page/{{item.author.id}}" class="name" >
-                            <img src="{{item.author.avatar.url}}" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;"> 
-                        </a> 
-                        <div>
-                            <a href="/user_page/{{item.author.id}}" class="name">{{item.author.first_name}} {{item.author.last_name}}</a>
-                            <a href="/user_page/{{item.author.id}}" class="mention">
-                                @{{item.author.username}}
-                            </a>
+        {% endif %}
+        <div>
+            {% for item in st %}
+            <div class="post_container">
+                <div class="post" >
+                    <div class="header">
+                        <div class="user_name">
+                            <a href="/user_page/{{item.author.id}}" class="name" >
+                                <img src="{{item.author.avatar.url}}" style="width: 3rem; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden;"> 
+                            </a> 
+                            <div>
+                                <a href="/user_page/{{item.author.id}}" class="name">{{item.author.first_name}} {{item.author.last_name}}</a>
+                                <a href="/user_page/{{item.author.id}}" class="mention">
+                                    @{{item.author.username}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="right">
+                            {{item.created|timesince}} ago
+                            <span class="edit">
+                                <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                            </span>
                         </div>
                     </div>
-                    <div class="right">
-                        {{item.created|timesince}} ago
-                        <span class="edit">
-                            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-                        </span>
-                    </div>
-                </div>
-
-                <!-- CONTENT-POST -->
-                <div class="content">
-                    <div class="post_content">
-                        {{item.content|linebreaks}}
-                    </div>
-                    <div>
-                        {% if item.image != '' %}
-                            <img src="{{item.image.url}}" class="post_image">
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- INTERACT-POST -->
-                <div class="interact">
-                    <div class="interact_button">
-                        <span><ion-icon name="heart-outline"></ion-icon></span>
-                        <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
-                        <span><ion-icon name="share-social-outline"></ion-icon></span>
-                    </div>
-
-                    <div class="bookmark">
-                        <span><ion-icon name="bookmark-outline"></ion-icon></span>
-                    </div>
-                </div>
     
-                <!-- VIEW-POST -->
-                <div class="view-post">
-                    <div class="comments text-muted">View all ... comments</div>
+                    <!-- CONTENT-POST -->
+                    <div class="content">
+                        <div class="post_content">
+                            {{item.content|linebreaks}}
+                        </div>
+                        <div>
+                            {% if item.image != '' %}
+                                <img src="{{item.image.url}}" class="post_image">
+                            {% endif %}
+                        </div>
+    
+                    </div>
+    
+                    <!-- INTERACT-POST -->
+                    <div class="interact">
+                        <div class="interact_button">
+                            <span><ion-icon name="heart-outline"></ion-icon></span>
+                            <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                            <span><ion-icon name="share-social-outline"></ion-icon></span>
+    
+                            <form action="{% url 'like_post' %}" method="POST" id="{{item.id}}" class="like-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{item.id}}>
+                                <button type="submit"  class="like-btn{{item.id}}">
+                                    {% if request.user in item.liked.all %}
+                                        Unlike 
+                                    {% else %}
+                                        Like
+                                    {% endif %}
+                                </button>
+                                <div class="like-count{{item.id}}">{{item.liked.count}}</div>
+                            </form>
+                        </div>
+    
+                        <div class="bookmark">
+                            <span><ion-icon name="bookmark-outline"></ion-icon></span>
+                        </div>
+                    </div>
+        
+                    <!-- VIEW-POST -->
+                    <div class="view-post">
+                        <div class="comments text-muted">View all ... comments</div>
+                    </div>
                 </div>
             </div>
-        </div>    
+    </div>    
         {% endfor %}
     </div>
 
