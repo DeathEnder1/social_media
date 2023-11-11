@@ -58,14 +58,22 @@ nav .nav_container .left {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-left: 10px;
+    margin-left: 6%;
 }
 nav .nav_container .right {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-right: 6%;
 }
 .search-bar {
+    margin-bottom: 0.5rem;
+    margin-left: 22rem;
+    background: var(--color-light);
+    border-radius: var(--border-radius);
+    padding: var(--card-padding);
+}
+.search_mes_right {
     margin-bottom: 0.5rem;
     margin-left: 1rem;
     background: var(--color-light);
@@ -112,7 +120,7 @@ nav .search-bar input[type="search"]::placeholder{
     border-radius: 4px;
     overflow: hidden;
     top: 108%;
-    right: 1%;
+    right: 4%;
     max-height: 0;
     transition: max-height 0.3s;
 }
@@ -355,7 +363,6 @@ main .container .left .sidebar-left {
 }
 /* Middle */
 .middle .create_post {
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
