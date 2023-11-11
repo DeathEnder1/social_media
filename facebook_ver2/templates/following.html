@@ -19,7 +19,7 @@
     
             <!-- SIDEBAR -->
             <div class="sidebar-left">
-                <a href="" class="menu-items ">
+                <a href="/" class="menu-items ">
                     <span><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
                 </a>
                 <a href="/following" class="menu-items ">
@@ -48,6 +48,7 @@
             </form>
 
             {% for article in articles %}
+                {% if article.author in user.follows.all or article.author == user %} 
         <div class="post_container">
             <!-- POST -->
             <div class="post" >
@@ -101,6 +102,7 @@
                 </div>
             </div>
         </div>
+                {% endif %}
         {% endfor %}
         </div> 
     

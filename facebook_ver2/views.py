@@ -10,7 +10,10 @@ from django.http import HttpResponse
 
 def home(request):
     if request.user.is_authenticated:
+        user = Profiles.objects.get(id=request.user.id)
         articles= Post.objects.all()
+        blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
+        articles= Post.objects.exclude(author__in=blocked_users)
         context = {
             'articles':articles
         }
@@ -18,6 +21,18 @@ def home(request):
     else: 
         return redirect('/login')
 
+def following(request):
+    if request.user.is_authenticated:
+        user = Profiles.objects.get(id=request.user.id)
+        articles= Post.objects.all()
+        follows = user.follows.all()
+        context = {
+            'articles':articles
+        }
+        return render(request, 'following.html',context)
+    else: 
+        return redirect('/login')
+    
 def login_page(request):
     page='login'
     if request.user.is_authenticated:
@@ -131,7 +146,9 @@ def block_user(request, id):
     if request.method == 'POST':
         form = BlockForm(request.POST)
         if form.is_valid():
-            blocker = request.user
+            aid = request.session.get('_auth_user_id')
+            blocker = Profiles.objects.get(id=aid)
+            follows = blocker.follows.all()
             blocked_user = Profiles.objects.get(id=id)  # Lấy thông tin người bị block từ id truyền vào
             action = form.cleaned_data['action']
             if action == 'block':
@@ -139,6 +156,7 @@ def block_user(request, id):
                 existing_block = Block.objects.filter(blocker=blocker, blocked_user=blocked_user).first()
                 if not existing_block:
                     Block.objects.create(blocker=blocker, blocked_user=blocked_user)
+                    blocker.follows.remove(blocked_user)
             elif action == 'unblock':
                 Block.objects.filter(blocker=blocker, blocked_user=blocked_user).delete()
             return redirect('/', user_id=id)
