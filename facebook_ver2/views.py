@@ -212,10 +212,10 @@ def search(request):
         searched = request.POST['searched']
         search_type = request.POST.get('search_type', 'username')  
 
-        blocked_users = request.user.get_blocked_users()
+        blocking_users = request.user.get_blocking_users()
 
         if search_type == 'username':
-            profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocked_users)
+            profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
             posts = Post.objects.filter(content__contains=searched, author__in=blocked_users)

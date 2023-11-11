@@ -13,8 +13,8 @@ class Profiles(AbstractUser):
 
     REQUIRED_FIELDS = []
     
-    def get_blocked_users(self):
-        return Profiles.objects.filter(blocked_user__blocker=self)
+    def get_blocking_users(self):
+        return Profiles.objects.filter(blocker__blocked_user=self)
 
 class Post(models.Model):
     content = models.TextField()
