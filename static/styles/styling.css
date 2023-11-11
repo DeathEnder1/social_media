@@ -69,7 +69,7 @@ nav .nav_container .right {
     border-radius: var(--border-radius);
     padding: var(--card-padding);
 }
-.search-bar input[type="search"] {
+.search-bar input[type="text"] {
     background: transparent;
     width: 25vw;
     margin-left: 1rem;

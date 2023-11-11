@@ -25,9 +25,10 @@
                     <img src="/static/styles/Logo.png" class="photo_image"> Facebook v2       
                 </a>
                 <!-- SEARCH-BOX -->
+                {% if request.user.is_authenticated %}
                 <form action="{% url 'search'%}" method="POST">
                     {% csrf_token %}
-
+                    
                     <div class="search-bar">
                         <ion-icon name="search-outline"></ion-icon>
                         <input type="text" class="prompt" name="searched" placeholder="Search...">
@@ -38,6 +39,7 @@
                         <!-- <button class="Search-button" type="submit"></button> -->
                     </div>
                 </form>
+                {%endif%}
             </div>
             
             <!-- RIGHT-NAV -->
