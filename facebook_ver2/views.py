@@ -81,9 +81,9 @@ def setting(request):
     form=Profile_Form(instance=user)
     if request.method=="POST":
         form=Profile_Form(request.POST, request.FILES,instance=user)
-        email = request.POST['email']
-        checkemail = Profiles.objects.filter(email=email)
-        if checkemail.count():
+        email_form = request.POST['email']
+        checkemail = Profiles.objects.filter(email=email_form)
+        if checkemail.count() and user.email != email_form:
             messages.error(request, 'Email Already Exist')
         elif form.is_valid():
             form.save()
