@@ -13,7 +13,8 @@ def home(request):
     if request.user.is_authenticated:
         current_user = request.user
         blocked_users = Block.objects.filter(blocker=current_user).values_list('blocked_user', flat=True)
-        articles= Post.objects.exclude(author__in=blocked_users)
+        blocker = Block.objects.filter(blocked_user=current_user).values_list('blocker', flat=True)
+        articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
         context = {
         'articles':articles
         }
@@ -218,7 +219,7 @@ def search(request):
             profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
-            posts = Post.objects.filter(content__contains=searched, author__in=blocked_users)
+            posts = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
     else:
         return render(request, 'search.html', {})

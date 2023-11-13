@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'social_media.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'social_media3',
+        'NAME': 'social_media',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
