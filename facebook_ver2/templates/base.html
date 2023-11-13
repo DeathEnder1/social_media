@@ -12,7 +12,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/7.0.3/pusher.min.js"></script>
 
-   
 </head>
 <body>
     <!-- NAVBAR -->
@@ -32,7 +31,7 @@
                     <div class="search-bar">
                         <ion-icon name="search-outline"></ion-icon>
                         <input type="text" class="prompt" name="searched" placeholder="Search...">
-                        <select name="search_type">
+                        <select name="search_type">S
                             <option value="username">Search by Username</option>
                             <option value="post">Search by Post</option>
                         </select>
@@ -46,7 +45,7 @@
             <div class="right">
                 <!-- *ID-AVATAR-USER-PROFILE -->
                 {% if request.user.is_authenticated %}
-                <a href="/chat_room">Messages</a>
+                <a href="/chat_room" style="margin-right: 10%; margin-left: 10%;"><img src="/static/styles/Messenger.png" class="photo_image"></a>
 
                 <div class="avatar_container online" onclick="settingsMenuToggle()">
                     <a href="#" >
@@ -54,21 +53,14 @@
                     </a>
                 </div>
 
-                <!-- MENU-LOGIN/LOGOUT -->
-                {%else%}
-                <a href="{% url 'login'%}" class="btn btn-primary">
-                    Login
-                </a>
-                {%endif%}
-
-
                 <div class="setting_menu">
                     <div class="setting_menu_inner">
                         <div class="avatar">
                             <a href="/user_page/{{request.user.id}}">
                                 <img src="{{request.user.avatar.url}}" class="photo_image">
                             </a>
-                            <div>
+                            <div style="margin-left: 5%;">
+                                <div style="text-align: left;">{{user.first_name}} {{user.last_name}}</div>
                                 <span>@{{user.username}}</span>
                                 <a href="/user_page/{{request.user.id}}">See your profile</a>
                             </div>
@@ -76,70 +68,34 @@
                         <hr>
                         <div class="avatar">
                             <a href="/chat_room">
-                                <img src="static/styles/Messenger.png" class="photo_image">
+                                <img src="/static/styles/Messenger.png" class="photo_image">
                             </a>
-                            <div>
+                            <div style="margin-left: 5%;">
                                 <span>Message</span>
                                 <a href="/chat_room">Go to Chat room</a>
                             </div>
                         </div>
                         <hr>
-                        <div class="setting_links">
-                            <img src="static/styles/logout.png" class="setting_icon">
-                            <a href="{% url 'logout' %}">Logout <img src="static/styles/arrow.png" width="10px"></a>
+                        <div class="setting_links" >
+                            <img src="/static/styles/logout.png" class="setting_icon">
+                            <a href="{% url 'logout' %}" style="margin-left: 5%;">Logout <img src="/static/styles/arrow.png" width="10px"></a>
                         </div>
                     </div>
                 </div>
+
+                {%else%}
+                <a href="{% url 'login'%}" class="btn btn-primary">
+                    Login
+                </a>
+                {%endif%}
             </div>
     
         </div>
-    </nav>
+    </nav> 
     {% block content %}{% endblock %}
 
+<script src="/static/styles/script.js"></script>
 
-<script src="static/styles/script.js">
-    $(document).ready(function(){
-        let display=false
-        $('.like-form').submit(function(e){
-            e.preventDefault()
-
-            const post_id = $(this).attr('id')
-
-            const LikeText = $(`.like-btn${post_id}`).html()
-            const trim =$.trim(LikeText)
-            console.log(trim)
-
-            const url = $(this).attr('action')
-
-            let res;
-            const like= $(`.like-count${post_id}`).text()
-            const trimCount = parseInt(like)
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: {
-                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                    'post_id':post_id,
-                },
-                success: function(response){
-                    if (trim =='<i><ion-icon name="heart-dislike-outline" role="img" class="md hydrated"></ion-icon></i>'){
-                        $(`.like-btn${post_id}`).html('<i><ion-icon name="heart-outline"></ion-icon></ion-icon></i>')
-                        res =trimCount-1
-                    } else{
-                        $(`.like-btn${post_id}`).html('<i><ion-icon name="heart-dislike-outline"></i>')
-                        res =trimCount+1
-                    }
-                    const like= $(`.like-count${post_id}`).text(res)
-                },
-                error: function(response){
-                    console.log('error',response)
-                }        
-            })
-
-        });
-    });
-</script>
 
 </body>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

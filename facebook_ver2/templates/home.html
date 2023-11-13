@@ -11,112 +11,137 @@
         <div class="left">
             <a href="/user_page/{{request.user.id}}" class="sidebar-profile">
                 <div class="profile_avatar">
-                    <img src="{{request.user.avatar.url}}" class="photo_image">
+                    <div class="border_avatar_home">
+                        <img src="{{request.user.avatar.url}}" class="photo_image">
+                    </div>
                     <p class="">{{request.user.first_name}}{{request.user.last_name}}<br>@{{request.user}}</p>
                 </div>
             </a>
     
             <!-- SIDEBAR -->
             <div class="sidebar-left">
-                <a href="/" class="menu-items active">
-                    <span><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
+                <a href="/" class="menu-items active" style="border-top-right-radius: var(--card-border-radius);">
+                    <span style="margin-left: 2rem;"><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
                 </a>
                 <a href="/following" class="menu-items">
-                    <span><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
+                    <span style="margin-left: 2rem;"><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
                 </a>
                 <a href="/chat_room" class="menu-items">
-                    <span><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
+                    <span style="margin-left: 2rem;"><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
                 </a>
                 <a href="{% url 'logout' %}" class="menu-items">
-                    <span><ion-icon name="log-out-outline"></ion-icon></span><h3>Logout</h3>
+                    <span style="margin-left: 2rem;"><ion-icon name="log-out-outline"></ion-icon></span><h3>Logout</h3>
                 </a>
             </div>
 
             <!-- CREATE-BOX-LEFT -->
-            <label for="create-post" class="btn btn-primary">CREATE POST</label>
+            <!-- <label for="create-post" class="btn btn-primary">CREATE POST</label> -->
         </div>
         
         <div class="middle">
             <!-- CREATE POST BUTTON -->
-            <form class="create_post">
+            <div class="post" style="display:flex; justify-content: space-between;">
                 <a class="profile_avatar" href="/user_page/{{request.user.id}}">
-                    <div>
+                    <div class="border_avatar_home">
                         <img src="{{request.user.avatar.url}}" class="photo_image">
                     </div>
-
                 </a>
-
-                <input type="text" placeholder="What d fuk on your brain?" id="create-post">
-                <input type="submit" value="Create post" class="btn btn-primary" style="margin-right: 1rem;">
-            </form>
-
-            {% for article in articles %}
-        <div class="post_container">
-            <!-- POST -->
-            <div class="post" >
-                <!-- INFOR'S POST -->
-                <div class="post_header">
-                    <div class="user_name">
-                        <a href="/user_page/{{article.author.id}}" class="name" >
-                            <img src="{{article.author.avatar.url}}" class="photo_image""> 
-                        </a> 
+                <button id="create-post-button" class="general_input_cp">What's on your mind ?</button>
+                <button id="create-post-button" class="btn btn-primary">Create post</button>
+            </div>
+            
+            <div id="popup-container" class="popup-container">
+                <div class="popup-content">
+                    <span class="close-button">&times;</span>
+                    <form id="create-post-form" class="create-post-form" method="POST" enctype="multipart/form-data">
+                        <p style="font-weight: bold; font-size: 25px;">Create a post</p>
+                        {% csrf_token %}
+    
+                        <p>
+                            <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                            <div class="choose-file">
+                                <a href=""></a>
+                                {{postform.image}}
+                            </div>
+                        </p>
+    
                         <div>
-                            <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
-                            <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
-                        </div>
-                    </div>
-                    <div class="right">
-                        {{article.created|timesince}} ago
-                        <span class="edit">
-                            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-                        </span>
-                    </div>
-                </div>
-    
-                <!-- CONTENT-POST -->
-                <div class="content">
-                    <div class="post_content">
-                        {{article.content|linebreaks}}
-                    </div>    
-                    <div>
-                        {% if article.image != '' %}
-                            <img src="{{article.image.url}}" class="post_image">
-                        {% endif %}
-                    </div>
-                </div>
-    
-                <!-- INTERACT-POST -->
-                <div class="interact">
-                    <div class="interact_button">
-                        <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
-                            {% csrf_token %}
-                            <input type="hidden" name="post_id" value={{article.id}}>
-                            <button type="submit"  class="like-btn{{article.id}} icon1">
-                                {% if request.user in article.liked.all%}
-                                    <i><ion-icon name="heart-dislike-outline" ></ion-icon></i>
-                                {%else%}
-                                    <i><ion-icon name="heart-outline"></ion-icon></i> 
-                                {%endif%}
+                            <button type="submit" class="btn btn-primary" name="submit_postform">
+                                Create post
                             </button>
-                            <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
-                        </form>
-
-                        <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
-                        <span><ion-icon name="share-social-outline"></ion-icon></span>
-                    </div>
-
-                    <div class="bookmark">
-                        <span><ion-icon name="bookmark-outline"></ion-icon></span>
-                    </div>
-                </div>
-    
-                <!-- VIEW-POST -->
-                <div class="view-post">
-                    <div class="comments text-muted">View all ... comments</div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+
+            <!-- SHOW POST-USER -->
+            {% for article in articles %}
+            <div class="post_container">
+                <!-- POST -->
+                <div class="post" >
+                    <!-- INFOR'S POST -->
+                    <div class="post_header">
+                        <div class="user_name">
+                            <a href="/user_page/{{article.author.id}}" class="name" >
+                                <img src="{{article.author.avatar.url}}" class="photo_image""> 
+                            </a> 
+                            <div>
+                                <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
+                                <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
+                            </div>
+                        </div>
+                        <div class="right">
+                            {{article.created|timesince}} ago
+                            <span class="edit">
+                                <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                            </span>
+                        </div>
+                    </div>
+        
+                    <!-- CONTENT-POST -->
+                    <div class="content">
+                        <div class="post_content">
+                            {{article.content|linebreaks}}
+                        </div>    
+                        <div>
+                            {% if article.image != '' %}
+                                <img src="{{article.image.url}}" class="post_image">
+                            {% endif %}
+                        </div>
+                    </div>
+        
+                    <!-- INTERACT-POST -->
+                    <div class="interact">
+                        <div class="interact_button">
+                            <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <button type="submit"  class="like-btn{{article.id}} icon1">
+                                    {% if request.user in article.liked.all%}
+                                        <i><ion-icon name="heart-dislike-outline"></ion-icon></i>
+                                    {%else%}
+                                        <i><ion-icon name="heart-outline"></ion-icon></i> 
+                                    {%endif%}
+                                </button>
+                                <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
+                            </form>
+
+                            <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                            <span><ion-icon name="share-social-outline"></ion-icon></span>
+                        </div>
+
+                        <div class="bookmark">
+                            <span><ion-icon name="bookmark-outline"></ion-icon></span>
+                        </div>
+                    </div>
+        
+                    <!-- VIEW-POST -->
+                    <div class="view-post">
+                        <div class="comments text-muted">View all ... comments</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div> 
     
         <div class="right">

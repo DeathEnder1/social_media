@@ -12,12 +12,25 @@ import pusher
 from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
+        postform =PostForm()
         user = Profiles.objects.get(id=request.user.id)
         articles= Post.objects.all()
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
         articles= Post.objects.exclude(author__in=blocked_users)
+
+        if "submit_postform" in request.POST:
+            postform =PostForm(request.POST, request.FILES)
+            if postform.is_valid(): 
+                formin = postform.save(commit=False)
+                formin.author = user
+                formin.save()
+                # postform = PostForm()
+                p_add = True
+                return redirect('/')
+
         context = {
-            'articles':articles
+            'articles':articles,
+            'postform':postform,
         }
         return render(request, 'home.html',context)
     else: 
@@ -116,33 +129,33 @@ def user_page(request,id):
     p_add = False
     is_blocked = Block.objects.filter(blocker= request.user, blocked_user=Profiles.objects.get(id=id)).exists()
     if request.method == "POST" :
-        aid = request.session.get('_auth_user_id')
-        current_user = Profiles.objects.get(id=aid)
-
-        if user in current_user.follows.all():
-            current_user.follows.remove(user)
-        else:
-            current_user.follows.add(user)
+        if "submit_postform" in request.POST:
+            postform =PostForm(request.POST, request.FILES)
+            if postform.is_valid(): 
+                formin = postform.save(commit=False)
+                formin.author = user
+                formin.save()
+                # postform = PostForm()
+                p_add = True
+                return redirect('/user_page/'+str(id))
         
+        elif "submit_commentform" in request.POST:
+            commentform = CommentForm(data=request.POST)
+            if commentform.is_valid():
+                formin = commentform.save(commit=False)
+                formin.user = user
+                formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                # commentform = CommentForm()
+                formin.save()
 
-    if "submit_postform" in request.POST:
-        postform =PostForm(request.POST, request.FILES)
-        if postform.is_valid(): 
-            formin = postform.save(commit=False)
-            formin.author = user
-            formin.save()
-            # postform = PostForm()
-            p_add = True
-            return redirect('/user_page/'+str(id))
-        
-    if "submit_commentform" in request.POST:
-        commentform = CommentForm(data=request.POST)
-        if commentform.is_valid():
-            formin = commentform.save(commit=False)
-            formin.user = user
-            formin.post = Post.objects.get(id=request.POST.get('post_id'))
-            # commentform = CommentForm()
-            formin.save()
+        else:     
+            aid = request.session.get('_auth_user_id')
+            current_user = Profiles.objects.get(id=aid)
+
+            if user in current_user.follows.all():
+                current_user.follows.remove(user)
+            else:
+                current_user.follows.add(user)
             
     
     context={'user':user,

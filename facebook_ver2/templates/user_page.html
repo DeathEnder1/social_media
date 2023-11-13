@@ -5,9 +5,6 @@
 {% block content %}
 
     <!-- Sidebar in profile -->
-    <div class="container">
-            
-    </div> 
 
     <div class="profile-sidebar">
         <div class="profile">
@@ -30,12 +27,12 @@
 
         <div class="about">
             <div class="box">
-                <h3>...</h3>
+                <h3>{{st.count}}</h3>
                 <span>Posts</span>
             </div>
             <div class="box">
                 <h3>{{user.followed_by.count}}</h3>
-                <span>Followed</span>
+                <span>Followers</span>
             </div>
             <div class="box">
                 <h3>{{user.follows.count}}</h3>
@@ -112,25 +109,42 @@
 
     <div class="profile-home">
         <!-- PROFILE-CREATE_POST -->
-        <div class="post">
-            <form action="" method="POST" enctype="multipart/form-data" style="width: 100%;">
-                <p style="font-weight: bold; font-size:25px;">Create a post</p>
-                {% csrf_token %}
-
-                <p class="post-input-content">
-                    <textarea name="content" placeholder="What's on your mind?" required></textarea>
-                    <div class="choose_file">
-                        <a href=""></a>
-                        {{postform.image}}
-                    </div>
-                </p>
-
-                <div>
-                    <button type="submit" class="btn btn-primary" name="submit_postform">
-                        Create post
-                    </button>
+        <div class="post" style="display:flex; justify-content: space-between;">
+            <a class="profile_avatar" href="/user_page/{{request.user.id}}">
+                <div class="border_avatar_home">
+                    <img src="{{request.user.avatar.url}}" class="photo_image">
                 </div>
-            </form>
+            </a>
+            <button id="create-post-button" class="general_input_cp">What's on your mind ?</button>
+            <button id="create-post-button" class="btn btn-primary">Create post</button>
+        </div>
+        
+        <div id="popup-container" class="popup-container">
+            <div class="popup-content">
+                <span class="close-button">&times;</span>
+                <form id="create-post-form" class="create-post-form" method="POST" enctype="multipart/form-data">
+                    <p style="font-weight: bold; font-size: 25px;">Create a post</p>
+                    {% csrf_token %}
+
+                    <p>
+                        <a href="/user_page/{{article.author.id}}" class="name" >
+                            <img src="{{user.avatar.url}}" class="photo_image""> 
+                        </a>
+
+                        <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                        <div class="choose-file">
+                            <a href=""></a>
+                            {{postform.image}}
+                        </div>
+                    </p>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary" name="submit_postform">
+                            Create post
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         {% for item in st %}
@@ -150,9 +164,11 @@
                     </div>
                     <div class="right">
                         {{item.created|timesince}} ago
-                        <span class="edit">
+                        
+                        <a href="/delete/{{item.id}}">Delete</a>
+                        <!-- <span class="edit">
                             <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-                        </span>
+                        </span> -->
                     </div>
                 </div>
 
