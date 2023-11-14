@@ -34,6 +34,7 @@ urlpatterns = [
     path('like/', views.like_unlike_post, name='like_post'),
     path('chat_room/',views.chat_room,name='chat_room'),
     path('chat_page/<str:username>/',views.chat_page,name='chat_page'),
+    path("following", views.following, name='following'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

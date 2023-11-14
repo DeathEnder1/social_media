@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profiles,Comment,Post
+from .models import Profiles,Comment,Post,ChatMessage
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
@@ -33,4 +33,4 @@ class BlockForm(forms.Form):
         choices=ACTIONS,
         widget=forms.RadioSelect,
     )
-    
+

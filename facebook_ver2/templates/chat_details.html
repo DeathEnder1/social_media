@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h3>{{follows.username}}</h3>
+</div>
+<!-- <div>
+    <img src="{{follows.avatar.url}}" alt="profile avatar">
+</div> -->
+    <div id="chat-body">
+        {% for chat in chats%}
+            {% if chat.msg_sender == user and chat.msg_receiver == follows %}
+                <div class="chat-box-sent">
+                    {{chat}}
+                </div>
+            {% elif chat.msg_sender == follows and chat.msg_receiver == user %}
+                <div class="chat-box-received">
+                    {{chat}}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <form action="" method="POST" id="myform">
+        {% csrf_token %}
+        {{form.body}}
+        <button type="submit" id="submit">  
+            Send
+        </button>
+    </form>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        const pusher = new Pusher('62781415eb4ada65ca96', {
+            cluster: 'ap1',
+        });
+
+        let form = document.getElementById("myform")
+        form.addEventListener("submit", sendChat)
+        const chatChannel = pusher.subscribe('my-channel');
+
+        chatChannel.bind('my-event', function(data) {
+            const newChatMessage = data.msg;
+            const chatMessageBox = document.createElement("div");
+            chatMessageBox.classList.add("chat-box-received");
+            chatMessageBox.innerText = newChatMessage;
+            document.getElementById("chat-body").append(chatMessageBox);
+        });
+
+        function sendChat(event) {
+            event.preventDefault();
+            const chatMessage = document.getElementById("id_body").value;
+
+            const data = {
+                msg: chatMessage
+            };
+
+            fetch("{% url 'sent_messages' follows.id %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log("Success:", result);
+                document.getElementById("id_body").value = "";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        let receivedMessages = [];
+        function receiveMessages(){
+            let url = "{% url 'receive_messages' follows.id %}" 
+            fetch(url)
+            .then(response => response.json())
+            .then(data =>{
+                console.log("Success:", data);
+                if (data.length === 0) {                 
+                    return;
+                 } 
+                else {
+                    let lastMessage = data[data.length - 1];
+                    const lastReceivedMessage = sessionStorage.getItem('lastReceivedMessage');
+                    if (lastReceivedMessage !== lastMessage.id.toString()) {
+                        sessionStorage.setItem('lastReceivedMessage', lastMessage.id.toString());
+
+                        const chatMessageBox = document.createElement("div");
+                        const chatId = lastMessage.id.toString();
+                        chatMessageBox.classList.add("chat-box-received");
+                        chatMessageBox.innerHTML = lastMessage.body;
+                        chatMessageBox.setAttribute("data-chat-id", chatId);
+
+                        chatBody.append(chatMessageBox);
+                    }
+                  }
+            })
+            .catch((error) => {
+            console.error("Error:", error);
+            });
+        }
+    </script>
+{% endblock content %}

@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'social_media',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '18042003',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -137,7 +137,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-STATIC_ROOT=BASE_DIR / 'static/styles'
+STATIC_ROOT = BASE_DIR / 'static/styles/'
 MEDIA_ROOT = BASE_DIR / 'static/images/'
 
 # Default primary key field type

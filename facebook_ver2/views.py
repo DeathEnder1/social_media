@@ -2,38 +2,69 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import *
 from .forms import *
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.db.models import Q
+import pusher
 from django.urls import reverse_lazy, reverse
-
-# Create your views here.
-
 def home(request):
     if request.user.is_authenticated:
-        if "submit_commentform" in request.POST:
-            commentform = CommentForm(request.POST)
-            if commentform.is_valid():
-                formin = commentform.save(commit=False)
-                formin.user = Profiles.objects.get(id = request.user.id)
-                formin.post = Post.objects.get(id=request.POST.get('post_id'))
-                formin.save()
+        postform =PostForm()
+        commentform=CommentForm()
+        user = Profiles.objects.get(id=request.user.id)
+        blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
+        blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
+        articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
+
+        if request.method == "POST" :
+            if "submit_postform" in request.POST:
+                postform =PostForm(request.POST, request.FILES)
+                if postform.is_valid(): 
+                    formin = postform.save(commit=False)
+                    formin.author = user
+                    formin.save()
+                    # postform = PostForm()
+                    p_add = True
+                    return redirect('/')
+            
+            elif "submit_commentform" in request.POST:
+                commentform = CommentForm(request.POST)
+                if commentform.is_valid():
+                    formin = commentform.save(commit=False)
+                    formin.user = Profiles.objects.get(id = request.user.id)
+                    formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                    formin.save()
                 response_data = {
                     'comment': {
                         'user': formin.user.username,
                         'body': formin.body,
                         }
                     }
-                return JsonResponse(response_data)
-            
-        blocked_users= Block.objects.filter(blocker=request.user).values_list('blocked_user', flat=True)
-        articles= Post.objects.exclude(author__in=blocked_users)
+                return(redirect('/'))
+                # return JsonResponse(response_data)
+
+        context = {
+            'articles':articles,
+            'postform':postform,
+        }
+        return render(request, 'home.html',context)
+    else: 
+        return redirect('/login')
+    
+def following(request):
+    if request.user.is_authenticated:
+        user = Profiles.objects.get(id=request.user.id)
+        articles= Post.objects.all()
+        follows = user.follows.all()
         context = {
             'articles':articles
         }
-        return render(request, 'home.html',context)
+        return render(request, 'following.html',context)
     else: 
         return redirect('/login')
 
@@ -100,9 +131,9 @@ def setting(request):
     form=Profile_Form(instance=user)
     if request.method=="POST":
         form=Profile_Form(request.POST, request.FILES,instance=user)
-        email = request.POST['email']
-        checkemail = Profiles.objects.filter(email=email)
-        if checkemail.count():
+        email_form = request.POST['email']
+        checkemail = Profiles.objects.filter(email=email_form)
+        if checkemail.count() and user.email != email_form:
             messages.error(request, 'Email Already Exist')
         elif form.is_valid():
             form.save()
@@ -119,42 +150,34 @@ def user_page(request,id):
     p_add = False
     is_blocked = Block.objects.filter(blocker= request.user, blocked_user=Profiles.objects.get(id=id)).exists()
     if request.method == "POST" :
-        aid = request.session.get('_auth_user_id')
-        current_user = Profiles.objects.get(id=aid)
+        if "submit_postform" in request.POST:
+            postform =PostForm(request.POST, request.FILES)
+            if postform.is_valid(): 
+                formin = postform.save(commit=False)
+                formin.author = user
+                formin.save()
+                # postform = PostForm()
+                p_add = True
+                return redirect('/user_page/'+str(id))
+        
+        elif "submit_commentform" in request.POST:
+            commentform = CommentForm(data=request.POST)
+            if commentform.is_valid():
+                formin = commentform.save(commit=False)
+                formin.user = user
+                formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                # commentform = CommentForm()
+                formin.save()
 
-        if user in current_user.follows.all():
-            current_user.follows.remove(user)
-        else:
-            current_user.follows.add(user)
-        return redirect('/user_page/'+str(id))
-        
+        else:     
+            aid = request.session.get('_auth_user_id')
+            current_user = Profiles.objects.get(id=aid)
 
-    if "submit_postform" in request.POST:
-        postform =PostForm(request.POST, request.FILES)
-        if postform.is_valid(): 
-            formin = postform.save(commit=False)
-            formin.author = user
-            formin.save()
-            p_add = True
-            return redirect('/user_page/'+str(id))
-        
-        
-    if "submit_commentform" in request.POST:
-        commentform = CommentForm(request.POST)
-        if commentform.is_valid():
-            formin = commentform.save(commit=False)
-            formin.user = user
-            formin.post = Post.objects.get(id=request.POST.get('post_id'))
-            formin.save()
-            p_add = True
-            response_data = {
-            'comment': {
-                'user': formin.user.username,
-                'body': formin.body,
-                }
-            }
-            return JsonResponse(response_data)
-    
+            if user in current_user.follows.all():
+                current_user.follows.remove(user)
+            else:
+                current_user.follows.add(user)
+            
     
     context={'user':user,
              'st':st,
@@ -171,7 +194,9 @@ def block_user(request, id):
     if request.method == 'POST':
         form = BlockForm(request.POST)
         if form.is_valid():
-            blocker = request.user
+            aid = request.session.get('_auth_user_id')
+            blocker = Profiles.objects.get(id=aid)
+            follows = blocker.follows.all()
             blocked_user = Profiles.objects.get(id=id)  # Lấy thông tin người bị block từ id truyền vào
             action = form.cleaned_data['action']
             if action == 'block':
@@ -190,16 +215,18 @@ def search(request):
         searched = request.POST['searched']
         search_type = request.POST.get('search_type', 'username')  # Sử dụng 'username' mặc định nếu không có giá trị được chọn
 
+        blocking_users = request.user.get_blocking_users()
+
         if search_type == 'username':
-            profiles = Profiles.objects.filter(username__contains=searched)
+            profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
-            posts = Post.objects.filter(content__contains=searched)
+            posts = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
     else:
         return render(request, 'search.html', {})
-
-
+    
+@csrf_exempt
 @login_required(login_url='login')
 def like_unlike_post(request):
     user =request.user.id
@@ -207,14 +234,12 @@ def like_unlike_post(request):
         post_id= request.POST.get('post_id')
         post= Post.objects.get(id=post_id)
         profile= Profiles.objects.get(id=user)
-        
         if profile in post.liked.all():
             post.liked.remove(user)
         else:
             post.liked.add(user)
-            
         like, created= Like.objects.get_or_create(user=profile, post_id=post_id)
-        
+
         if not created:
             if like.value=='Like':
                 like.value='Unlike'
@@ -222,10 +247,8 @@ def like_unlike_post(request):
                 like.value='Like'
         else:
             like.value='Like'
-                
             post.save()
             like.save()
-        
         data ={
             'value': like.value,
             'likes': post.liked.all().count()
