@@ -31,13 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'facebook_ver2'
+    'facebook_ver2',
 ]
 
 AUTH_USER_MODEL = 'facebook_ver2.Profiles'
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'social_media.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,11 +71,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'social_media.wsgi.application'
+# WSGI_APPLICATION = 'social_media.wsgi.application'
+ASGI_APPLICATION = "social_media.asgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    }
+}
 
 DATABASES = {
     'default': {

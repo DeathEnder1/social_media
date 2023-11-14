@@ -32,11 +32,8 @@ urlpatterns = [
     path('block/<int:id>/', views.block_user, name='block_user'),
     path('search', views.search, name='search'),
     path('like/', views.like_unlike_post, name='like_post'),
-    path('chat_room/',views.chat_room,name="chat_room"),
-    path('chat_room/chat_details/<int:id>',views.chat_details,name="chat_details"),
-    path('sent_messages/<int:id>',views.sent_messages,name="sent_messages"),
-    path('receive_messages/<int:id>',views.receive_messages,name="receive_messages"),
-    path('chat_notification/',views.chat_notification,name="chat_notification"),
+    path('chat_room/',views.chat_room,name='chat_room'),
+    path('chat_page/<str:username>/',views.chat_page,name='chat_page'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

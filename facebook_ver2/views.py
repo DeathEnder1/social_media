@@ -2,13 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .forms import *
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.db.models import Q
-import pusher
 from django.urls import reverse_lazy, reverse
 
 # Create your views here.
@@ -201,7 +199,7 @@ def search(request):
     else:
         return render(request, 'search.html', {})
 
-@csrf_exempt
+
 @login_required(login_url='login')
 def like_unlike_post(request):
     user =request.user.id
@@ -237,81 +235,26 @@ def like_unlike_post(request):
     
     return redirect('/')
 
-
 @login_required(login_url='login')
 def chat_room(request):
-    uid = request.user.id
-    user = Profiles.objects.get(id = uid)
-    follows = user.follows.all()
-    context = {'user':user,
-               'follows':follows}
-    return render(request,"chat_room.html",context)
+    users = Profiles.objects.exclude(username = request.user.username)
+    context = {
+        'users':users,
+    }
+    return render(request, 'chat_room.html',context)
 
 @login_required(login_url='login')
-def chat_details(request,id):
-    uid = request.user.id
-    user = Profiles.objects.get(id = uid)
-    follows = user.follows.get(id=id)
-    form = ChatMessageForm()
-    chats = ChatMessage.objects.all()
-    receive_chats = ChatMessage.objects.filter(msg_sender=follows,msg_receiver=user,seen=False)
-    receive_chats.update(seen=True)
-    receive_chats_json = [
-        {"id": chat.id, "body": chat.body} for chat in receive_chats
-    ]
-    if request.method == "POST":
-        form = ChatMessageForm(request.POST)
-
-        if form.is_valid():
-            chat_message = form.save(commit=False)
-            chat_message.msg_sender = user
-            chat_message.msg_receiver = follows
-            chat_message.save()
-            return redirect('chat_details',id =follows.id)
-
-    context = {'follows':follows,
-               'form':form,
-               'user':user,
-               'chats':chats,
-               "receive_chats": json.dumps(receive_chats_json)}
-    request.session['last_received_message'] = receive_chats.last().id if receive_chats.exists() else None
-    return render(request,"chat_details.html",context)
-
-@login_required(login_url='login')
-def sent_messages(request,id):
-    uid = request.user.id
-    user = Profiles.objects.get(id = uid)
-    follows = user.follows.get(id=id)
-    data = json.loads(request.body)
-    new_chat = data["msg"]
-    new_chat_message = ChatMessage.objects.create(body = new_chat,msg_sender = user,msg_receiver = follows,seen = False)
-    pusher_client = pusher.Pusher(
-        app_id = "1695930",
-        key = "62781415eb4ada65ca96",
-        secret = "c41bf0167df3de120779",
-        cluster = "ap1",
-        ssl=True)
-    pusher_client.trigger('my-channel', 'my-event', {'msg': new_chat_message.body})
-    return JsonResponse(new_chat_message.body,safe=False)
-
-@login_required(login_url='login')
-def receive_messages(request,id):
-    uid = request.user.id
-    user = Profiles.objects.get(id = uid)
-    follows = user.follows.get(id=id)
-    chats = ChatMessage.objects.filter(msg_sender=follows,msg_receiver=user)
-    last_received_message = request.session.get('last_received_message')
-    arr = [{"id": chat.id, "body": chat.body} for chat in chats if chat.id != last_received_message]
-    return JsonResponse(arr, safe=False)
-
-
-@login_required(login_url='login')
-def chat_notification(request):
-    uid = request.user.id
-    user = Profiles.objects.get(id = uid)
-    follows = user.follows.all()
-    arr = []
-    for follow in follows:
-        chats = ChatMessage.objects.filter(msg_sender_id=follow,msg_receiver=user,seen = False)
-        arr.append(chats.count())
-    return JsonResponse(arr,safe=False)
+def chat_page(request,username):
+    user_obj = Profiles.objects.get(username=username)
+    users = Profiles.objects.exclude(username = request.user.username)
+    if request.user.id > user_obj.id:
+        thread_name = f'chat_{request.user.id}-{user_obj.id}'
+    else:
+        thread_name = f'chat_{user_obj.id}-{request.user.id}'
+    message_obj = ChatModel.objects.filter(thread_name=thread_name)
+    context = {
+        'users': users,
+        'user': user_obj,
+        'messages':message_obj
+    }
+    return render(request, 'chat_page.html',context)

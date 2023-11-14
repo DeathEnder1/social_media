@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profiles,Comment,Post, ChatMessage
+from .models import Profiles,Comment,Post
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
@@ -34,8 +34,3 @@ class BlockForm(forms.Form):
         widget=forms.RadioSelect,
     )
     
-class ChatMessageForm(forms.ModelForm):
-    body = forms.CharField(widget=forms.TextInput(attrs={'width':'300px','placeholder':'Type message here...'}))
-    class Meta:
-        model = ChatMessage
-        fields = ['body']

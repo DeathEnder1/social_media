@@ -136,7 +136,7 @@
                     {% if item.comment_set.all %}
                     <div id="comments-list">
                         {% for comment in item.comment_set.all %}
-                            <p>{{comment.user}}:{{comment.body}}</p>
+                            <p>{{comment.body}}</p>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -153,3 +153,7 @@
 
 
 {%endblock content%}
+{% block javascript %}
+<script src="{% static 'js/like.js' %}"></script>
+<script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}

@@ -11,8 +11,12 @@ class Profiles(AbstractUser):
     bio = models.TextField(default="No bio yet", max_length=300)
     email = models.EmailField(max_length=200)
     avatar = models.ImageField(default="avatar.svg")
+    online_status = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = []
+    
+    def __str__(self) -> str:
+        return self.user.username
 
 class Post(models.Model):
     content = models.TextField()
@@ -27,15 +31,6 @@ class Post(models.Model):
     
     class Meta:
         ordering = ('-created',)
-
-class ChatMessage(models.Model):
-    body = models.TextField()
-    msg_sender = models.ForeignKey(Profiles,on_delete=models.CASCADE,related_name="msg_sender")
-    msg_receiver = models.ForeignKey(Profiles,on_delete=models.CASCADE,related_name="msg_receiver")
-    seen = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.body
 
 class Comment(models.Model):
     user = models.ForeignKey(Profiles,on_delete=models.CASCADE)
@@ -59,3 +54,13 @@ class Like(models.Model):
     value = models.CharField(choices=LIKE_CHOICES,max_length=20)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+    
+    
+class ChatModel(models.Model):
+    sender = models.CharField(max_length=100, default=None)
+    message = models.TextField(null=True, blank=True)
+    thread_name = models.CharField(null=True, blank=True, max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self) -> str:
+        return self.message
