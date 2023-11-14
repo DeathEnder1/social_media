@@ -58,7 +58,7 @@
             {% if article.comment_set.all %}
             <div id="comments-list">
                 {% for comment in article.comment_set.all %}
-                    <p>{{comment.body}}</p>
+                    <p>{{user.username}}:{{comment.body}}</p>
                 {% endfor %}
                 </div>
             {% endif %}

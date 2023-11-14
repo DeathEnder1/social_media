@@ -44,13 +44,35 @@ socket.onmessage = function(e){
         </tr>`
     }
 }
+document.querySelector('#message_input').addEventListener('keydown', function(e) {
+    if (e.keyCode === 13) {
+        e.preventDefault();
+        const message_input = document.querySelector('#message_input');
+        const message = message_input.value;
+        if (message.trim() === ''){
+            return false;
+        }
+        else {
+            socket.send(JSON.stringify({
+                'message': message,
+                'username': message_username
+            }));
+        }
+        message_input.value = '';
+    }
+});
 
 document.querySelector('#chat-message-submit').onclick = function(e){
     const message_input = document.querySelector('#message_input');
     const message = message_input.value;
-    socket.send(JSON.stringify({
-        'message': message,
-        'username': message_username
-    }))
+    if (message.trim() === ''){
+        return false
+    }
+    else{
+        socket.send(JSON.stringify({
+            'message': message,
+            'username': message_username
+        }));
+    }
     message_input.value = '';
 }
