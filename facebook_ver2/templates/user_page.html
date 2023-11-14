@@ -109,6 +109,7 @@
 
     <div class="profile-home">
         <!-- PROFILE-CREATE_POST -->
+        {% if request.user == user%}
         <div class="post" style="display:flex; justify-content: space-between;">
             <a class="profile_avatar" href="/user_page/{{request.user.id}}">
                 <div class="border_avatar_home">
@@ -128,14 +129,19 @@
 
                     <p>
                         <a href="/user_page/{{article.author.id}}" class="name" >
-                            <img src="{{user.avatar.url}}" class="photo_image""> 
+                            <img src="{{user.avatar.url}}" class="photo_image"> 
                         </a>
 
                         <textarea name="content" placeholder="What's on your mind?" required></textarea>
+
+                        <!-- Choose file-image -->                  
                         <div class="choose-file">
-                            <a href=""></a>
-                            {{postform.image}}
+                          <label for="id_image">
+                            <ion-icon name="images-outline"></ion-icon>
+                          </label>
+                          <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
                         </div>
+                        <div id="selectedBanner"></div>
                     </p>
 
                     <div>
@@ -146,6 +152,7 @@
                 </form>
             </div>
         </div>
+        {%endif%}
 
         {% for item in st %}
         <div class="post_container">

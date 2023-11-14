@@ -26,44 +26,32 @@ document.addEventListener('click', (event) => {
 
 
 // 
-$(document).ready(function(){
-    let display=false
-    $('.like-form').submit(function(e){
-        e.preventDefault()
-
-        const post_id = $(this).attr('id')
-
-        const LikeText = $(`.like-btn${post_id}`).html()
-        const trim =$.trim(LikeText)
-        console.log(trim)
-
-        const url = $(this).attr('action')
-
-        let res;
-        const like= $(`.like-count${post_id}`).text()
-        const trimCount = parseInt(like)
-
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: {
-                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                'post_id':post_id,
-            },
-            success: function(response){
-                if (trim =='<i><ion-icon name="heart-dislike-outline" role="img" class="md hydrated"></ion-icon></i>'){
-                    $(`.like-btn${post_id}`).html('<i><ion-icon name="heart-outline"></ion-icon></ion-icon></i>')
-                    res =trimCount-1
-                } else{
-                    $(`.like-btn${post_id}`).html('<i><ion-icon name="heart-dislike-outline"></i>')
-                    res =trimCount+1
-                }
-                const like= $(`.like-count${post_id}`).text(res)
-            },
-            error: function(response){
-                console.log('error',response)
-            }        
-        })
-
-    });
+var selDiv = "";
+var storedFiles = [];
+$(document).ready(function () {
+  $("#id_image").on("change", handleFileSelect);
+  selDiv = $("#selectedBanner");
 });
+
+function handleFileSelect(e) {
+  var files = e.target.files;
+  var filesArr = Array.prototype.slice.call(files);
+  filesArr.forEach(function (f) {
+    if (!f.type.match("image.*")) {
+      return;
+    }
+    storedFiles.push(f);
+
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var html =
+        '<img src="' +
+        e.target.result +
+        "\" data-file='" +
+        f.name +
+        "alt='Category Image' height='100%' width='100%'>";
+      selDiv.html(html);
+    };
+    reader.readAsDataURL(f);
+  });
+}

@@ -14,19 +14,24 @@ def home(request):
     if request.user.is_authenticated:
         postform =PostForm()
         user = Profiles.objects.get(id=request.user.id)
-        articles= Post.objects.all()
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
-        articles= Post.objects.exclude(author__in=blocked_users)
+        blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
+        articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
 
-        if "submit_postform" in request.POST:
-            postform =PostForm(request.POST, request.FILES)
-            if postform.is_valid(): 
-                formin = postform.save(commit=False)
-                formin.author = user
+        if "submit_commentform" in request.POST:
+            commentform = CommentForm(request.POST)
+            if commentform.is_valid():
+                formin = commentform.save(commit=False)
+                formin.user = Profiles.objects.get(id = request.user.id)
+                formin.post = Post.objects.get(id=request.POST.get('post_id'))
                 formin.save()
-                # postform = PostForm()
-                p_add = True
-                return redirect('/')
+                response_data = {
+                    'comment': {
+                        'user': formin.user.username,
+                        'body': formin.body,
+                        }
+                    }
+                # return JsonResponse(response_data)
 
         context = {
             'articles':articles,
@@ -111,9 +116,9 @@ def setting(request):
     form=Profile_Form(instance=user)
     if request.method=="POST":
         form=Profile_Form(request.POST, request.FILES,instance=user)
-        email = request.POST['email']
-        checkemail = Profiles.objects.filter(email=email)
-        if checkemail.count():
+        email_form = request.POST['email']
+        checkemail = Profiles.objects.filter(email=email_form)
+        if checkemail.count() and user.email != email_form:
             messages.error(request, 'Email Already Exist')
         elif form.is_valid():
             form.save()
@@ -194,11 +199,13 @@ def search(request):
         searched = request.POST['searched']
         search_type = request.POST.get('search_type', 'username')  # Sử dụng 'username' mặc định nếu không có giá trị được chọn
 
+        blocking_users = request.user.get_blocking_users()
+
         if search_type == 'username':
-            profiles = Profiles.objects.filter(username__contains=searched)
+            profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
-            posts = Post.objects.filter(content__contains=searched)
+            posts = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
     else:
         return render(request, 'search.html', {})

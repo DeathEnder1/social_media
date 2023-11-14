@@ -59,10 +59,14 @@
     
                         <p>
                             <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                        <!-- Choose file-image -->                  
                             <div class="choose-file">
-                                <a href=""></a>
-                                {{postform.image}}
+                                <label for="id_image">
+                                <ion-icon name="images-outline"></ion-icon>
+                                </label>
+                                <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
                             </div>
+                            <div id="selectedBanner"></div>
                         </p>
     
                         <div>
@@ -83,7 +87,7 @@
                     <div class="post_header">
                         <div class="user_name">
                             <a href="/user_page/{{article.author.id}}" class="name" >
-                                <img src="{{article.author.avatar.url}}" class="photo_image""> 
+                                <img src="{{article.author.avatar.url}}" class="photo_image"> 
                             </a> 
                             <div>
                                 <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
@@ -125,6 +129,22 @@
                                 </button>
                                 <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
                             </form>
+
+                            <div>
+                                {% if article.comment_set.all %}
+                                <div >
+                                    {% for comment in article.comment_set.all %}
+                                        <p>{{comment.user}}:{{comment.body}}</p>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <form method="POST" id = "{{article.id}}" class="comment-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="post_id" value={{article.id}}>
+                                    <input type="text" name="body">
+                                    <button class="ui primary button" type="submit" name = "submit_commentform">Comment</button>
+                                </form>
+                            </div>
 
                             <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
                             <span><ion-icon name="share-social-outline"></ion-icon></span>
