@@ -95,7 +95,7 @@
                         <button type="submit" class="button">Block</button >
                     </form>
                 {% else %}
-                    <form method="post" action="{% url 'block_user' id=user.id %}">
+                    <form method="POST" action="{% url 'block_user' id=user.id %}">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="unblock">
                         <button type="submit" class="button">Unblock</button>
@@ -231,3 +231,7 @@
 
 
 {%endblock content%}
+{% block javascript %}
+<script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}
+

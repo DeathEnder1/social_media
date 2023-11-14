@@ -6,6 +6,7 @@
 {% load static %}
 {% if request.user.is_authenticated %}
 
+
     <main>
     <div class="container">
         <div class="left">
@@ -190,20 +191,13 @@
                     <h4>General</h4>
                     <h4 class="message-requests">Requests</h4>
                 </div>
-
-                <div></div>
            </div>
         </div>
     </div>
     </main>
 {% endif %}
-
 {%endblock content%}
-
-{%block script%}
-<script>
-$(document).ready(function(){
-    console.log('Working')
-})
-</script>
-{%endblock script%}
+{% block javascript %}
+<script src="{% static 'js/like.js' %}"></script>
+<script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}

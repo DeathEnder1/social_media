@@ -1,45 +1,35 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ChatMessage{% endblock title %}
 
 {% block content %}
-
-<div class="mes-container">
-    <div class="mes-content">
-      <h1>Chat Messenger</h1>
-      <div>
-        <p>@{{request.user.username}}</p>
-      </div>
-      <div class="mes-middle">
-        <p>Message</p>
-        {% for follow in follows %}
-        <a href="{% url 'chat_details' follow.id %}">
-          <div>
-            <h5>{{follow.username}}</h5>
-          </div>
-          <div class="mes-msg">
-            0
-          </div>
-        </a>
-        {% endfor %}
-      </div>
+<div class="back-container">
+    <div class="container-fluid front-container">
+        <div class="back-top"></div>
+        <div class="back-main"></div>
     </div>
-  </div>
+    <div class="container front-container1">
+        <div class="row">
+            <div class="col-sm-4 contacts">
+                <div class="contact-table-scroll">
+                    <table class="table table-hover">
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td><img src="{{user.avatar.url}}" alt="{{user.avatar}}" class="profile-image rounded-circle">
+                                </td>
+                                <td><a href="{% url 'chat_page' username=user.username %}">{{user.username}}</a></td>
+                            </tr>
+                            {% endfor %}
 
-<script>
-    setInterval(getNotification, 1000)
-    function getNotification(){
-        let url = "{% url 'chat_notification' %}"
+                        </tbody>
+                    </table>
+                </div>
 
-        fetch(url)
-        .then(response=>response.json())
-        .then(data=>{
-            console.log(data)
-            let chat_notification_btn = document.getElementsByClassName("msg")
-            for(let i = 0; i<data.length;i++)
-            {   
-                chat_notification_btn[i].innerHTML = data[i]
-            }
-        })
-        .catch(error=>console.log(error))
-    }
-</script>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}

@@ -19,7 +19,6 @@ class PostForm(forms.ModelForm):
         fields = ["content","image"]
 
 class CommentForm(forms.ModelForm):
-    body = forms.CharField(label='',widget=forms.TextInput(attrs={'placeholder':'Add comment...'}))
     class Meta:
         model = Comment
         fields = ['body']
@@ -35,8 +34,3 @@ class BlockForm(forms.Form):
         widget=forms.RadioSelect,
     )
 
-class ChatMessageForm(forms.ModelForm):
-    body = forms.CharField(widget=forms.TextInput(attrs={'width':'300px','placeholder':'Type message here...'}))
-    class Meta:
-        model = ChatMessage
-        fields = ['body']
