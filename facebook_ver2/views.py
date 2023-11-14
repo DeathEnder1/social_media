@@ -13,24 +13,37 @@ from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
         postform =PostForm()
+        commentform=CommentForm()
         user = Profiles.objects.get(id=request.user.id)
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
         blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
         articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
 
-        if "submit_commentform" in request.POST:
-            commentform = CommentForm(request.POST)
-            if commentform.is_valid():
-                formin = commentform.save(commit=False)
-                formin.user = Profiles.objects.get(id = request.user.id)
-                formin.post = Post.objects.get(id=request.POST.get('post_id'))
-                formin.save()
+        if request.method == "POST" :
+            if "submit_postform" in request.POST:
+                postform =PostForm(request.POST, request.FILES)
+                if postform.is_valid(): 
+                    formin = postform.save(commit=False)
+                    formin.author = user
+                    formin.save()
+                    # postform = PostForm()
+                    p_add = True
+                    return redirect('/')
+            
+            elif "submit_commentform" in request.POST:
+                commentform = CommentForm(request.POST)
+                if commentform.is_valid():
+                    formin = commentform.save(commit=False)
+                    formin.user = Profiles.objects.get(id = request.user.id)
+                    formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                    formin.save()
                 response_data = {
                     'comment': {
                         'user': formin.user.username,
                         'body': formin.body,
                         }
                     }
+                return(redirect('/'))
                 # return JsonResponse(response_data)
 
         context = {

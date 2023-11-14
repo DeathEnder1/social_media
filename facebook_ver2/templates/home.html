@@ -47,7 +47,7 @@
                     </div>
                 </a>
                 <button id="create-post-button" class="general_input_cp">What's on your mind ?</button>
-                <button id="create-post-button" class="btn btn-primary">Create post</button>
+                <button id="create-post-button-primary" class="btn btn-primary">Create post</button>
             </div>
             
             <div id="popup-container" class="popup-container">
@@ -56,20 +56,29 @@
                     <form id="create-post-form" class="create-post-form" method="POST" enctype="multipart/form-data">
                         <p style="font-weight: bold; font-size: 25px;">Create a post</p>
                         {% csrf_token %}
-    
+                        
+                        <!-- Input content -->
                         <p>
-                            <textarea name="content" placeholder="What's on your mind?" required></textarea>
-                        <!-- Choose file-image -->                  
+                            <a href="/user_page/{{article.author.id}}" class="name" >
+                                <img src="{{user.avatar.url}}" class="photo_image"> 
+                            </a>
+
+                            <div style="border-bottom: 1px solid var(--color-dark);">
+                                <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                            </div>
+                            <!-- Icon choose file -->
                             <div class="choose-file">
-                                <label for="id_image">
-                                <ion-icon name="images-outline"></ion-icon>
-                                </label>
-                                <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
+                                <div class="icon2-container">
+                                    <label for="id_image" class="icon2">
+                                        <ion-icon name="images-outline"></ion-icon>
+                                    </label>
+                                    <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
+                                </div>
                             </div>
                             <div id="selectedBanner"></div>
                         </p>
     
-                        <div>
+                        <div style="display: flex; flex-direction: column;">
                             <button type="submit" class="btn btn-primary" name="submit_postform">
                                 Create post
                             </button>

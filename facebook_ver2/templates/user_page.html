@@ -5,7 +5,6 @@
 {% block content %}
 
     <!-- Sidebar in profile -->
-
     <div class="profile-sidebar">
         <div class="profile">
             <div class="avatar">
@@ -117,7 +116,7 @@
                 </div>
             </a>
             <button id="create-post-button" class="general_input_cp">What's on your mind ?</button>
-            <button id="create-post-button" class="btn btn-primary">Create post</button>
+            <button id="create-post-button-primary" class="btn btn-primary">Create post</button>
         </div>
         
         <div id="popup-container" class="popup-container">
@@ -132,14 +131,17 @@
                             <img src="{{user.avatar.url}}" class="photo_image"> 
                         </a>
 
-                        <textarea name="content" placeholder="What's on your mind?" required></textarea>
-
-                        <!-- Choose file-image -->                  
+                        <div style="border-bottom: 1px solid var(--color-dark);">
+                            <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                        </div>
+                        <!-- Icon choose file -->
                         <div class="choose-file">
-                          <label for="id_image">
-                            <ion-icon name="images-outline"></ion-icon>
-                          </label>
-                          <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
+                            <div class="icon2-container">
+                                <label for="id_image" class="icon2">
+                                    <ion-icon name="images-outline"></ion-icon>
+                                </label>
+                                <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
+                            </div>
                         </div>
                         <div id="selectedBanner"></div>
                     </p>

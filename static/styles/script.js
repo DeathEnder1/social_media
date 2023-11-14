@@ -1,27 +1,32 @@
-// 
+// dropdown nav avatar
 var settingmenu = document.querySelector(".setting_menu");
 
 function settingsMenuToggle() {
     settingmenu.classList.toggle("setting_menu_height");
 }
 
-// 
+// create post pop up
 const createPostButton = document.getElementById('create-post-button');
+const createPostButtonPrimary = document.getElementById('create-post-button-primary');
 const popupContainer = document.getElementById('popup-container');
 const closePopupButton = document.querySelector('.close-button');
 
 createPostButton.addEventListener('click', () => {
-    popupContainer.style.display = 'block';
+  popupContainer.style.display = 'block';
+});
+
+createPostButtonPrimary.addEventListener('click', () => {
+  popupContainer.style.display = 'block';
 });
 
 closePopupButton.addEventListener('click', () => {
-    popupContainer.style.display = 'none';
+  popupContainer.style.display = 'none';
 });
 
 document.addEventListener('click', (event) => {
-    if (event.target === popupContainer) {
-        popupContainer.style.display = 'none';
-    }
+  if (event.target === popupContainer) {
+      popupContainer.style.display = 'none';
+  }
 });
 
 

@@ -2,28 +2,27 @@
 
 {% block content %}
 
-<div>
-    <h1>Chat Messenger</h1>
-</div>
-<div>
-<p>@{{request.user.username}}</p>
-</div>
-<div class="middle">
-    Message
-    {% for follow in follows %}
-    <!-- <div>
-        <img src="{{follow.avatar.url}}" alt=" follows profile avatar">
-    </div> -->
-    <a href="{% url 'chat_details' follow.id %}">
-        <div>
+<div class="mes-container">
+    <div class="mes-content">
+      <h1>Chat Messenger</h1>
+      <div>
+        <p>@{{request.user.username}}</p>
+      </div>
+      <div class="mes-middle">
+        <p>Message</p>
+        {% for follow in follows %}
+        <a href="{% url 'chat_details' follow.id %}">
+          <div>
             <h5>{{follow.username}}</h5>
-        </div>
-        <div class="msg">
+          </div>
+          <div class="mes-msg">
             0
-        </div>
-    </a>
-    {% endfor %}
-</div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 
 <script>
     setInterval(getNotification, 1000)
