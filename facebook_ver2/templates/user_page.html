@@ -175,6 +175,7 @@
                     
                     <div class="right">
                         {{item.created|timesince}} ago
+                        <a href="/update/{{item.id}}">Update</a>
                         
                         <a href="/delete/{{item.id}}" onclick="popup_delete">Delete</a>
                         <!-- <span class="edit">

@@ -106,9 +106,15 @@
                         </div>
                         <div class="right">
                             {{article.created|timesince}} ago
+                            {% if request.user == article.author %}
                             <span class="edit">
-                                <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                                <a href="/delete/{{article.author.id}}">
+                                    <ion-icon name="ellipsis-horizontal-outline">
+                                        Delete
+                                    </ion-icon>
+                                </a>
                             </span>
+                            {% endif %}
                         </div>
                     </div>
         

@@ -120,8 +120,23 @@ def delete(request, id):
             st.delete()
             return redirect('/user_page/'+str(uid))
         else:
-            return HttpResponse('You can not edit this post')
+            return HttpResponse('You can not delete this post')
     return render(request, 'delete.html', {'st':st})
+
+@login_required(login_url='login')
+def update(request, id):
+    st=Post.objects.get(id=id)
+    form =PostForm(instance=st)
+    uid=request.session.get('_auth_user_id')
+    if request.method=='POST':
+        form = PostForm(request.POST,request.FILES,instance=st)
+        if form.is_valid():
+            form.save()
+            return redirect('/user_page/'+str(uid))
+        else:
+            return HttpResponse('You can not edit this post')
+    return render(request, 'update.html',{'form':form})
+        
 
 @login_required(login_url='login')
 def setting(request):

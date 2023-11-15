@@ -4,11 +4,13 @@
 {% block content %}
     <form method="POST" action="" class="delete_container">
         {% csrf_token %}
+
         <div class="delete">
             <p>Are you sure to delete this item?</p>
             <br>
             <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary">Return</a>
             <input type="submit" name="delete_clicked" value="Confirm" class="btn btn-primary">
         </div>
+
     </form>
 {% endblock %}
