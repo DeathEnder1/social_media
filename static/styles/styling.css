@@ -113,7 +113,6 @@ nav .search-bar input[type="search"]::placeholder{
     position: absolute;
     top: 0;
     right: 0;
-
 }
 
 .setting_menu {
@@ -307,6 +306,25 @@ h1 {
     background-color: transparent;
 	border-color: #FFFFFF;
 }
+
+/* delete-button general */
+.delete_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.delete {
+    display: flex;
+    align-items: center;
+    width: 400px;
+    padding: 20px;
+    border: 1px splid #666;
+    border-radius: 8px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    background-color: #fff;
+}
+
 
 /* Home-main: left-middle-right */
 main {
@@ -503,7 +521,7 @@ main .container .right {
 }
 
 /* Messenger-chat room */
-.mes-container {
+/* .mes-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -546,9 +564,9 @@ main .container .right {
     padding: 4px 8px;
     border-radius: 12px;
     font-size: 14px;
-}
+} */
 /* Messenger-chat details */
-#chat-body {
+/* #chat-body {
     max-height: 70vh;
     overflow-y: auto;
 }
@@ -594,7 +612,7 @@ main .container .right {
     background-color: #007bff;
     color: #fff;
     cursor: pointer;
-}
+} */
 
 /* PROFILE */
 /* Profile edit-setting */
@@ -625,7 +643,7 @@ label {
 .edit-profile a {
     margin-top: 10px;
     display: block;
-  }
+}
 
 /*  */
 .profile-sidebar {
@@ -778,11 +796,9 @@ label {
 }
 .icon2-container {
     text-align: center;
-    margin-bottom: 20px;
 }
 .icon2 {
-    width: 100px; 
-    height: 100px;
+    margin-top: 5%;
     font-size: 30px;
     color: var(--color-danger); 
 }

@@ -160,6 +160,7 @@
         <div class="post_container">
             <div class="post" >
                 <div class="post_header">
+
                     <div class="user_name">
                         <a href="/user_page/{{item.author.id}}" class="name" >
                             <img src="{{item.author.avatar.url}}" class="photo_image"> 
@@ -171,11 +172,17 @@
                             </a>
                         </div>
                     </div>
+                    
                     <div class="right">
                         {{item.created|timesince}} ago
                         <a href="/update/{{item.id}}">Update</a>
                         
-                        <a href="/delete/{{item.id}}">Delete</a>
+                        <a href="/delete/{{item.id}}" onclick="popup_delete">Delete</a>
+                        <!-- <span class="edit">
+                            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                        </span> -->
+
+                        <div class="setting_edit"></div>
                     </div>
                 </div>
 
@@ -210,10 +217,6 @@
 
                         <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
                         <span><ion-icon name="share-social-outline"></ion-icon></span>
-                    </div>
-
-                    <div class="bookmark">
-                        <span><ion-icon name="bookmark-outline"></ion-icon></span>
                     </div>
                 </div>
     
