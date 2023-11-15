@@ -108,11 +108,8 @@
                             {{article.created|timesince}} ago
                             {% if request.user == article.author %}
                             <span class="edit">
-                                <a href="/delete/{{article.author.id}}">
-                                    <ion-icon name="ellipsis-horizontal-outline">
-                                        Delete
-                                    </ion-icon>
-                                </a>
+                                <a href="/delete/{{article.author.id}}">Delete</a>
+                                <a href="/update/{{article.author.id}}">Update</a>
                             </span>
                             {% endif %}
                         </div>

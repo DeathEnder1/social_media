@@ -40,7 +40,7 @@
         
         <div class="middle">
             {% for article in articles %}
-            {% if article.author in user.follows.all or article.author == user %}
+            {% if article.author in user.follows.all %}
             <div class="post_container">
                 <!-- POST -->
                 <div class="post" >
