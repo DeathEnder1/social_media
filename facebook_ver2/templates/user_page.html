@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{%load static %}
+
+{% block tile %}{{user.username}}{% endblock tile %}
+{% block content %}
+
+    <!-- Sidebar in profile -->
+    <div class="profile-sidebar">
+        <div class="profile">
+            <div class="avatar">
+                <img src="{{user.avatar.url}}">
+            </div>
+
+            <div class="name">
+                <h1>
+                {%if user.first_name%}
+                    <p>{{user.first_name}} {{user.last_name}} </p>
+                {%else%}
+                    <p>No name yet </p>
+                {% endif %}
+                </h1>
+            </div>
+
+            <span>@{{user.username}}</span>
+        </div>
+
+        <div class="about">
+            <div class="box">
+                <h3>{{st.count}}</h3>
+                <span>Posts</span>
+            </div>
+            <div class="box">
+                <h3>{{user.followed_by.count}}</h3>
+                <span>Followers</span>
+            </div>
+            <div class="box">
+                <h3>{{user.follows.count}}</h3>
+                <span>Following</span>
+            </div>
+        </div>
+
+        <div class="menu">
+            <a href="#" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Posts
+            </a>
+            
+            {% if request.user == user%}
+            <a href="/chat_room" class="active">
+                <span class="icon">
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                </span>
+                Message
+            </a>
+            <a href="profile_edit/" class="active" >
+                <span class="icon">
+                    <ion-icon name="create-outline"></ion-icon>
+                </span>
+                Edit profile
+            </a>
+            {%else%}
+            <a href="/chat_room" class="active">
+                <span class="icon">
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                </span>
+                Message
+            </a>
+            <a href="#" class="active">
+                <span class="icon">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                </span>
+                <form method = "POST">
+                    {% csrf_token %}
+                    {% if request.user in user.followed_by.all %}
+                        <button type = "submit" class="button red_btn">
+                            Unfollow user
+                        </button>
+                    {%else%}   
+                        <button type = "submit" class="button green_btn">      
+                            Follow user
+                        </button>
+                    {%endif%}
+                </form>
+            </a>
+            <a href="#" class="active">
+                <span class="icon">
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                </span>
+                {% if not is_blocked%}
+                    <form method="post" action="{% url 'block_user' id=user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="block">
+                        <button type="submit" class="button">Block</button >
+                    </form>
+                {% else %}
+                    <form method="POST" action="{% url 'block_user' id=user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="unblock">
+                        <button type="submit" class="button">Unblock</button>
+                    </form>
+                {% endif %}
+            </a>
+            {%endif%}
+        </div>
+    </div>
+
+    <div class="profile-home">
+        <!-- PROFILE-CREATE_POST -->
+        {% if request.user == user%}
+        <div class="post" style="display:flex; justify-content: space-between;">
+            <a class="profile_avatar" href="/user_page/{{request.user.id}}">
+                <div class="border_avatar_home">
+                    <img src="{{request.user.avatar.url}}" class="photo_image">
+                </div>
+            </a>
+            <button id="create-post-button" class="general_input_cp">What's on your mind ?</button>
+            <button id="create-post-button-primary" class="btn btn-primary">Create post</button>
+        </div>
+        
+        <div id="popup-container" class="popup-container">
+            <div class="popup-content">
+                <span class="close-button">&times;</span>
+                <form id="create-post-form" class="create-post-form" method="POST" enctype="multipart/form-data">
+                    <p style="font-weight: bold; font-size: 25px;">Create a post</p>
+                    {% csrf_token %}
+
+                    <p>
+                        <a href="/user_page/{{article.author.id}}" class="name" >
+                            <img src="{{user.avatar.url}}" class="photo_image"> 
+                        </a>
+
+                        <div style="border-bottom: 1px solid var(--color-dark);">
+                            <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                        </div>
+                        <!-- Icon choose file -->
+                        <div class="choose-file">
+                            <div class="icon2-container">
+                                <label for="id_image" class="icon2">
+                                    <ion-icon name="images-outline"></ion-icon>
+                                </label>
+                                <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
+                            </div>
+                        </div>
+                        <div id="selectedBanner"></div>
+                    </p>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary" name="submit_postform">
+                            Create post
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {%endif%}
+
+        {% for item in st %}
+        <div class="post_container">
+            <div class="post" >
+                <div class="post_header">
+
+                    <div class="user_name">
+                        <a href="/user_page/{{item.author.id}}" class="name" >
+                            <img src="{{item.author.avatar.url}}" class="photo_image"> 
+                        </a> 
+                        <div>
+                            <a href="/user_page/{{item.author.id}}" class="name"><b>{{item.author.first_name}} {{item.author.last_name}}</b></a>
+                            <a href="/user_page/{{item.author.id}}" class="mention">
+                                @{{item.author.username}}
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="right">
+                        {{item.created|timesince}} ago
+                        <a href="/update/{{item.id}}">Update</a>
+                        
+                        <a href="/delete/{{item.id}}" onclick="popup_delete">Delete</a>
+                        <!-- <span class="edit">
+                            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                        </span> -->
+
+                        <div class="setting_edit"></div>
+                    </div>
+                </div>
+
+                <!-- CONTENT-POST -->
+                <div class="content">
+                    <div class="">
+                        {{item.content|linebreaks}}
+                    </div>
+                    <div>
+                        {% if item.image != '' %}
+                            <img src="{{item.image.url}}" class="post_image">
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- INTERACT-POST -->
+                <div class="interact">
+                    <div class="interact_button">
+                        <form action="{% url 'like_post' %}" method="POST" id="{{item.id}}" class="like-form like">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value={{item.id}}>
+                            <button type="submit"  class="like-btn{{item.id}} icon1">
+                                {% if request.user in item.liked.all%}
+                                    <i><ion-icon name="heart-dislike-outline" ></ion-icon></i>
+                                {%else%}
+                                    <i><ion-icon name="heart-outline"></ion-icon></i> 
+                                {%endif%}
+                            </button>
+                            <div class="like-count{{item.id}} count">{{item.liked.count}}</div>
+                        </form>
+
+                        <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                        <span><ion-icon name="share-social-outline"></ion-icon></span>
+                    </div>
+                </div>
+    
+                <!-- VIEW-POST -->
+                <div class="view-post">
+                    <div class="comments text-muted">View all ... comments</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+
+{%endblock content%}
+{% block javascript %}
+<script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}
+
