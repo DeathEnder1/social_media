@@ -100,7 +100,7 @@
                                 <img src="{{article.author.avatar.url}}" class="photo_image"> 
                             </a> 
                             <div>
-                                <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
+                                <a href="/user_page/{{article.author.id}}" class="name"><b>{{article.author.first_name}} {{article.author.last_name}}</b></a>
                                 <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
                             </div>
                         </div>
@@ -174,21 +174,25 @@
         </div> 
     
         <div class="right">
-           <div class="messages">
+           <div class="You can know">
                 <div class="heading">
-                    <h3>Messages</h3>
-                    <ion-icon name="create-outline"></ion-icon>
-                </div>
-
-                <div class="search_mes_right">
-                    <ion-icon name="search-circle-outline"></ion-icon>
-                    <input type="search" placeholder="Search messages" id="message-search">
-                </div>
-
-                <div class="category">
-                    <h4 class="active">Primary</h4>
-                    <h4>General</h4>
-                    <h4 class="message-requests">Requests</h4>
+                    <div class="card">
+                        <div class="card-header">
+                          知ってるかもしれません
+                        </div>
+                        <div class="card-body">                    
+                          <p class="card-text">
+                            {% for user1 in  alluser %}
+                                {% if user not in user1.followed_by.all and user != user1 %}
+                                    <a href="/user_page/{{user1.id}}" class="name" >
+                                    <img src="{{user1.avatar.url}}" class="photo_image"> 
+                                    </a>
+                                    <a href="/user_page/{{user1.id}}" class="name"><b>{{user1.first_name}} {{user1.last_name}}</b></a>
+                                    <a href="{% url 'user_page' user1.id  %}">@{{user1}} </a><br/>
+                                {%endif%}
+                            {% endfor %}</p>
+                        </div>
+                    </div>
                 </div>
            </div>
         </div>

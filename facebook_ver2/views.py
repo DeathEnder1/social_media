@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+import random
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
@@ -17,6 +17,8 @@ def home(request):
         postform =PostForm()
         commentform=CommentForm()
         user = Profiles.objects.get(id=request.user.id)
+        items = list(Profiles.objects.all())
+        alluser = random.sample(items, 3)
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
         blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
         articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
@@ -51,6 +53,7 @@ def home(request):
         context = {
             'articles':articles,
             'postform':postform,
+            'alluser' : alluser,
         }
         return render(request, 'home.html',context)
     else: 
