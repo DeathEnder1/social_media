@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
     integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
     crossorigin="anonymous" />
+
     <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
 
     <!-- <link rel="icon" href="/static/styles/favicon.ico"> -->
@@ -26,13 +27,41 @@
 </head>
 <body>
     <!-- NAVBAR -->
-        <nav>
-            <div class = "nav_container">
+    <nav>
+        <div class = "nav_container">
+            <!-- LEFT-NAV -->
+            <div class="left">
+                <!-- LOGO-WEB-PAGE -->
+                <a href="/">
+                    <img src="/static/styles/Logo.png" class="photo_image">       
+                </a>
+                <!-- SEARCH-BOX -->
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'search'%}" method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="search-bar">
+                        <ion-icon name="search-outline"></ion-icon>
+                        <input type="text" class="prompt" name="searched" placeholder="Search...">
+                        <select name="search_type" style="border: none; background: none">
+                            <option value="username">Search by Username</option>
+                            <option value="post">Search by Post</option>
+                        </select>
+                        <!-- <button class="Search-button" type="submit"></button> -->
+                    </div>
+                </form>
+                {%endif%}
+            </div>
             
-                <div class="left">
-                
-                    <a href="/">
-                        <img src="/static/styles/Logo.png" class="photo_image">       
+            <!-- RIGHT-NAV -->
+            <div class="right">
+                <!-- *ID-AVATAR-USER-PROFILE -->
+                {% if request.user.is_authenticated %}
+                <a href="/chat_room" style="margin-right: 10%; margin-left: 10%;"><img src="/static/styles/Messenger.png" class="photo_image"></a>
+
+                <div class="avatar_container" onclick="settingsMenuToggle()">
+                    <a href="#" >
+                        <img src="{{request.user.avatar.url}}" class="photo_image">
                     </a>
                 
                     {% if request.user.is_authenticated %}

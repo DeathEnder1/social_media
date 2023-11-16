@@ -4,7 +4,7 @@
 
 :root {
     --color-white: hsl(252, 30%, 100%);
-    --color-light: hsl(252, 30%, 95%);
+    --color-light: hsl(252, 30%, 95%);  
     --color-gray: hsl(252, 15%, 65%);
     --color-primary: hsl(252, 75%, 60%);
     --color-secondary: hsl(252, 100%, 90%);
@@ -374,6 +374,10 @@ main .container .left {
     position: sticky;
     top: var(--sticky-top-left);
 }
+
+main .container .left a:hover{
+    text-decoration: underline;
+}
 main .container .left .profile_avatar {
     padding: var(--card-padding);
     background: var(--color-white);
@@ -465,7 +469,7 @@ main .container .left .sidebar-left {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
     padding: var(--card-padding);
-    margin: 1rem 0;
+    margin-bottom: 1rem;
     width: 730px; 
     font-size: 0.85rem;
     line-height: 1.5;
@@ -473,6 +477,7 @@ main .container .left .sidebar-left {
 .post_header{
     display: flex;
     justify-content: space-between;
+    padding-bottom:20px;
 }
 .post .user_name {
     display: flex;
@@ -499,6 +504,24 @@ textarea {
     border-radius: 7px;
     padding-bottom: 10%;
 }
+/* Main home comment */
+/* .comment .cmt_result {
+    none
+} */
+.comment .cmt_content {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+    border-radius: var(--border-radius);
+}
+.comment .cmt_input {
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+    padding: 0.5rem;
+    padding-right: 100%;
+}
+
 /* middle-interact */
 .post .interact {
     display: flex;
@@ -510,7 +533,7 @@ textarea {
 .icon1{
     background: none;
     font-size: 24px;
-    color: red;
+    color: rgb(222, 26, 26);
 }
 .like{
     display: flex;
@@ -521,6 +544,35 @@ textarea {
     margin-left: 3px;
     margin-top: 1px;
 }
+/* Middle post-right edit menu inner */
+.edit_menu {
+    position: absolute;
+    width: 90%;
+    max-width: 120px;
+    background: var(--color-white);
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    border-radius: 4px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s;
+}
+.edit_menu_height {
+    max-height: 150px;
+}
+.icon3 a {
+    font-size: 12px;
+    color: var(--color-danger);
+    text-decoration: none;
+}
+.edit_menu_inner {
+    padding: 20px;
+}
+.edit_menu hr {
+    border: 0;
+    height: 1px;
+    background: #9a9a9a;
+    margin: 15px 0;
+}
 
 /* Right */
 main .container .right {
@@ -528,24 +580,25 @@ main .container .right {
     top: var(--sticky-top-right);
     bottom: 0;
 }
-/* .right .messages {
+.right .card {
     background: var(--color-white);
+    width: 90%;
+    max-width: 300px;
     border-radius: var(--card-border-radius);
-    padding: var(--card-padding);
+    padding: 1rem;
 }
-.right .messages .heading {
+.right .card .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: var(--color-danger);
 }
-.right.messages i {
+.right .card .card-header i{
     font-size: 1.4rem;
 }
-.right.messages.search-bar{
-    display: flex;
-    margin-bottom: 1rem;
-} */
 
 /* Folllowing.html */
 .name{
@@ -697,6 +750,15 @@ label {
     margin-right: 1rem;
     font-size: 20px;
 }
+
+.profile-sidebar .button{
+    width: 100%; 
+    text-align:left; 
+    background:none;
+    font-size: 1rem;
+    color: var(--color-danger);
+}
+
 .profile-sidebar .menu a:hover::before, 
 .profile-sidebar .menu .active::before {
     content: '';
@@ -865,18 +927,15 @@ min-height: 600px;
     width: 100%;
     background-color: rgba(245, 245, 235, 0.6);
 }
-
 .message_box .conversation{
     height: 15%;
     margin-left: 3%;
 }
-
 .message_box .conversation .conversation_user{
     display: flex; 
     flex-direction: row;
     padding-top: 7%;
 }
-
 .chat_box{
     width:55%;
 }
@@ -911,4 +970,23 @@ min-height: 600px;
 
 .table td{
     border: none;
+.name{
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.user_name a:hover{
+    text-decoration: underline;
+}
+
+.mention{
+    color: black;
+    font-size: 16px;
+    opacity: 70%;
+}
+
+.post_content{
+    font-size: 18px;
+    margin-left: 10px;
 }

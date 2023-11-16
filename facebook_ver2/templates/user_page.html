@@ -48,7 +48,7 @@
             </a>
             
             {% if request.user == user%}
-            <a href="/chat_room" class="active">
+            <a href="/chat_page/{{user}}" class="active">
                 <span class="icon">
                     <ion-icon name="chatbubbles-outline"></ion-icon>
                 </span>
@@ -67,24 +67,26 @@
                 </span>
                 Message
             </a>
-            <a href="#" class="active">
+            <div class="active" style="display:flex; flex-direction:row">
                 <span class="icon">
                     <ion-icon name="checkmark-circle-outline"></ion-icon>
                 </span>
-                <form method = "POST">
+                <div style="width: 100%;">
+                <form method = "POST" >
                     {% csrf_token %}
                     {% if request.user in user.followed_by.all %}
-                        <button type = "submit" class="button red_btn">
+                        <button type = "submit" class="button" >
                             Unfollow user
                         </button>
                     {%else%}   
-                        <button type = "submit" class="button green_btn">      
+                        <button type = "submit" class="button">      
                             Follow user
                         </button>
                     {%endif%}
                 </form>
-            </a>
-            <a href="#" class="active">
+                </div>
+            </div>
+            <div class="active" style="display:flex; flex-direction:row">
                 <span class="icon">
                     <ion-icon name="close-circle-outline"></ion-icon>
                 </span>
@@ -101,7 +103,7 @@
                         <button type="submit" class="button">Unblock</button>
                     </form>
                 {% endif %}
-            </a>
+                </div>
             {%endif%}
         </div>
     </div>
@@ -166,9 +168,9 @@
                             <img src="{{item.author.avatar.url}}" class="photo_image"> 
                         </a> 
                         <div>
-                            <a href="/user_page/{{item.author.id}}" class="name"><b>{{item.author.first_name}} {{item.author.last_name}}</b></a>
-                            <a href="/user_page/{{item.author.id}}" class="mention">
-                                @{{item.author.username}}
+                            <a href="/user_page/{{item.author.id}}">
+                                <p class="name">{{item.author.first_name}} {{item.author.last_name}}</p>
+                                <p class="mention">@{{item.author.username}}</p>
                             </a>
                         </div>
                     </div>
@@ -187,7 +189,7 @@
 
                 <!-- CONTENT-POST -->
                 <div class="content">
-                    <div class="">
+                    <div class="post_content">
                         {{item.content|linebreaks}}
                     </div>
                     <div>

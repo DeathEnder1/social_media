@@ -15,7 +15,10 @@
                     <div class="border_avatar_home">
                         <img src="{{request.user.avatar.url}}" class="photo_image">
                     </div>
-                    <p class="">{{request.user.first_name}}{{request.user.last_name}}<br>@{{request.user}}</p>
+                    <div style="display: flex; flex-direction:column;">
+                        <p class="name">{{request.user.first_name}} {{request.user.last_name}}</p>
+                        <p class="mention">@{{request.user}}</p>
+                    </div>
                 </div>
             </a>
     
@@ -25,7 +28,7 @@
                     <span style="margin-left: 2rem;"><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
                 </a>
                 <a href="/following" class="menu-items">
-                    <span style="margin-left: 2rem;"><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
+                    <span style="margin-left: 2rem;"><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Following</h3>
                 </a>
                 <a href="/chat_room" class="menu-items">
                     <span style="margin-left: 2rem;"><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
@@ -54,12 +57,12 @@
             <div id="popup-container" class="popup-container">
                 <div class="popup-content">
                     <span class="close-button">&times;</span>
-                    <form id="create-post-form" class="create-post-form" method="POST" enctype="multipart/form-data">
+                    <form id="create-post-form" class="create-post-form" method="POST" enctype="multipart/form-data" style="overflow: auto;">
                         <p style="font-weight: bold; font-size: 25px;">Create a post</p>
                         {% csrf_token %}
                         
                         <!-- Input content -->
-                        <p>
+                        <p >
                             <a href="/user_page/{{article.author.id}}" class="name" >
                                 <img src="{{user.avatar.url}}" class="photo_image"> 
                             </a>
@@ -76,7 +79,7 @@
                                     <input style="visibility: hidden; display: none;" type="file" name="image" id="id_image" accept="image/*" />
                                 </div>
                             </div>
-                            <div id="selectedBanner"></div>
+                            <div id="selectedBanner" ></div>
                         </p>
     
                         <div style="display: flex; flex-direction: column;">
@@ -100,32 +103,52 @@
                                 <img src="{{article.author.avatar.url}}" class="photo_image"> 
                             </a> 
                             <div>
-                                <a href="/user_page/{{article.author.id}}" class="name"><b>{{article.author.first_name}} {{article.author.last_name}}</b></a>
-                                <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
+                                <a href="/user_page/{{article.author.id}}"><p class="name">{{article.author.first_name}} {{article.author.last_name}}</p>
+                                <p class="mention">@{{article.author.username}}</p></a>
                             </div>
                         </div>
-                        <div class="right">
+                        <div class="right" style="display: flex; align-items: center">
                             {{article.created|timesince}} ago
                             {% if request.user == article.author %}
-                            <span class="edit">
-                                <a href="/delete/{{article.id}}">Delete</a>
-                                <a href="/update/{{article.id}}">Update</a>
-                            </span>
+
+                            <div class="post_id" data-id="post_id" onclick="editMenuToggle()">
+                                <a href="#" style="margin-left: 1rem">
+                                    <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                                </a>
+                            </div>
+
+                            <div class="edit_menu">
+                                <div class="edit_menu_inner">
+                                    <!-- Update edit -->
+                                    <div class="icon3_edit">
+                                        <a href="/update/{{article.id}}">
+                                            <span style="color: var(--color-danger)"><ion-icon name="settings-outline"></ion-icon></span>Update
+                                        </a>
+                                    </div>
+                                    <hr>
+                                    <!-- Delete edit -->
+                                    <div class="icon3_edit">
+                                        <a href="/delete/{{article.id}}">
+                                            <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline"></ion-icon></span>Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
         
                     <!-- CONTENT-POST -->
-                    <div class="content">
-                        <div class="post_content">
-                            {{article.content|linebreaks}}
-                        </div>    
-                        <div>
-                            {% if article.image != '' %}
-                                <img src="{{article.image.url}}" class="post_image">
-                            {% endif %}
-                        </div>
+                    
+                    <div class="post_content">
+                        {{article.content|linebreaks}}
+                    </div>    
+                    <div>
+                        {% if article.image != '' %}
+                            <img src="{{article.image.url}}" class="post_image">
+                        {% endif %}
                     </div>
+                   
         
                     <!-- INTERACT-POST -->
                     <div class="interact">
@@ -143,19 +166,19 @@
                                 <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
                             </form>
 
-                            <div>
+                            <div class="comment">
                                 {% if article.comment_set.all %}
-                                <div >
+                                <div class="cmt_result">
                                     {% for comment in article.comment_set.all %}
-                                        <p>{{comment.user}}:{{comment.body}}</p>
+                                        <p class="cmt_content">{{comment.user}}:{{comment.body}}</p>
                                     {% endfor %}
-                                    </div>
+                                </div>
                                 {% endif %}
-                                <form method="POST" id = "{{article.id}}" class="comment-form">
+                                <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content:space-between">
                                     {% csrf_token %}
                                     <input type="hidden" name="post_id" value={{article.id}}>
-                                    <input type="text" name="body">
-                                    <button class="ui primary button" type="submit" name = "submit_commentform">Comment</button>
+                                    <input type="text" name="body" class="cmt_input" placeholder="Get comment">
+                                    <button class="btn btn-primary" style="margin-left: 1rem;" type="submit" name = "submit_commentform">Comment</button>
                                 </form>
                             </div>
 
@@ -174,23 +197,30 @@
         </div> 
     
         <div class="right">
-            <div class="heading">
-                <div class="card">
-                    <div class="card-header">
-                    知ってるかもしれません
-                    </div>
-                    <div class="card-body">                    
-                    <p class="card-text">
+
+            <div class="card">
+                <div class="card-header">
+                    You may know
+                </div>
+
+                <div class="card-body" style="display:flex; flex-direction:column">                    
+                    <p class="card-text" >
                         {% for user1 in  alluser %}
+                        <div style="display:flex; flex-direction:left">
                             {% if user not in user1.followed_by.all and user != user1 %}
                                 <a href="/user_page/{{user1.id}}" class="name" >
                                 <img src="{{user1.avatar.url}}" class="photo_image"> 
                                 </a>
-                                <a href="/user_page/{{user1.id}}" class="name"><b>{{user1.first_name}} {{user1.last_name}}</b></a>
-                                <a href="{% url 'user_page' user1.id  %}">@{{user1}} </a><br/>
+                                <a href="/user_page/{{user1.id}}" class="name">
+                                    <div style="display: flex; flex-direction:column; margin-left:10px">
+                                        <p class="name">{{user1.first_name}} {{user1.last_name}}</p>
+                                        <p class="mention">@{{user1}}</p>
+                                    </div>
+                                </a>
                             {%endif%}
-                        {% endfor %}</p>
-                    </div>
+                        </div>
+                        {% endfor %}
+                    </p>
                 </div>
             </div>
         </div>
