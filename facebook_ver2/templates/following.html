@@ -14,7 +14,10 @@
                     <div class="border_avatar_home">
                         <img src="{{request.user.avatar.url}}" class="photo_image">
                     </div>
-                    <p class="">{{request.user.first_name}}{{request.user.last_name}}<br>@{{request.user}}</p>
+                    <div style="display: flex; flex-direction:column;">
+                        <p class="name">{{request.user.first_name}} {{request.user.last_name}}</p>
+                        <p class="mention">@{{request.user}}</p>
+                    </div>
                 </div>
             </a>
     
@@ -51,8 +54,8 @@
                                 <img src="{{article.author.avatar.url}}" class="photo_image"> 
                             </a> 
                             <div>
-                                <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
-                                <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
+                                <a href="/user_page/{{article.author.id}}"><p class="name">{{article.author.first_name}} {{article.author.last_name}}</p>
+                                <p class="mention">@{{article.author.username}}</p></a>
                             </div>
                         </div>
                         <div class="right">
