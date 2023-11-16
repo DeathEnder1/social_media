@@ -10,7 +10,7 @@ from .forms import *
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.db.models import Q
-import pusher
+
 from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
@@ -18,7 +18,7 @@ def home(request):
         commentform=CommentForm()
         user = Profiles.objects.get(id=request.user.id)
         items = list(Profiles.objects.all())
-        alluser = random.sample(items, 3)
+        alluser = random.sample(items, 1)
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
         blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
         articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
@@ -64,8 +64,26 @@ def following(request):
         user = Profiles.objects.get(id=request.user.id)
         articles= Post.objects.all()
         follows = user.follows.all()
+        commentform=CommentForm()
+        if request.method == "POST" :
+            if "submit_commentform" in request.POST:
+                commentform = CommentForm(request.POST)
+                if commentform.is_valid():
+                    formin = commentform.save(commit=False)
+                    formin.user = Profiles.objects.get(id = request.user.id)
+                    formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                    formin.save()
+                response_data = {
+                    'comment': {
+                        'user': formin.user.username,
+                        'body': formin.body,
+                        }
+                    }
+                return(redirect('/following'))
         context = {
-            'articles':articles
+            'articles':articles,
+            'follows':follows,
+            'commentform':commentform,
         }
         return render(request, 'following.html',context)
     else: 
@@ -138,6 +156,8 @@ def update(request, id):
             return redirect('/user_page/'+str(uid))
         else:
             return HttpResponse('You can not edit this post')
+    else:
+        form = PostForm(instance=st)
     return render(request, 'update.html',{'form':form})
         
 
@@ -186,6 +206,7 @@ def user_page(request,id):
                 formin.post = Post.objects.get(id=request.POST.get('post_id'))
                 # commentform = CommentForm()
                 formin.save()
+            return(redirect('/user_page/{{request.user.id}}'))
 
         else:     
             aid = request.session.get('_auth_user_id')

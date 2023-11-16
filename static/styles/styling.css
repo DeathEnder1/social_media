@@ -9,7 +9,7 @@
     --color-primary: hsl(252, 75%, 60%);
     --color-secondary: hsl(252, 100%, 90%);
     --color-success: hsl(120, 95%, 65%);
-    --color-danger: hsl(233, 66%, 70%);
+    --color-danger: hsl(347, 82%, 78%);
     --color-dark: hsl(252, 30%, 10%);
     --color-black: hsl(252, 30%, 10%);
     --color-gradient: linear-gradient(to right, #e2336b, #fcac46);
@@ -316,15 +316,42 @@ h1 {
 }
 .delete {
     display: flex;
+    overflow: hidden;
     align-items: center;
-    width: 400px;
+    position: fixed;
+    width: 100%;
+    max-width: 450px;
     padding: 20px;
+    top: 50%;
+    left: 50%;
     border: 1px splid #666;
     border-radius: 8px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     background-color: #fff;
+    transform: translate(-50%, -50%) scale(1.2);
 }
 
+/* update-button general */
+.update_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.update {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: var(--color-white);
+    border-radius: 10px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);;
+    transform: translate(-50%, -50%) scale(1.2);
+}
 
 /* Home-main: left-middle-right */
 main {
@@ -501,7 +528,7 @@ main .container .right {
     top: var(--sticky-top-right);
     bottom: 0;
 }
-.right .messages {
+/* .right .messages {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
     padding: var(--card-padding);
@@ -518,101 +545,26 @@ main .container .right {
 .right.messages.search-bar{
     display: flex;
     margin-bottom: 1rem;
-}
+} */
 
-/* Messenger-chat room */
-/* .mes-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f8f8f8;
+/* Folllowing.html */
+.name{
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
 }
-
-.mes-container .mes-content {
-    max-width: 500px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    padding: 20px;
+.user_name a:hover{
+    text-decoration: underline;
 }
-
-.mes-container h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+.mention{
+    color: black;
+    font-size: 16px;
+    opacity: 70%;
 }
-.mes-container .mes-middle {
-    margin-top: 20px;
-}
-.mes-container .mes-middle a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-    margin-bottom: 10px;
-}
-.mes-container .mes-middle a:hover {
-    background-color: #f2f2f2;
-}
-.mes-container .mes-middle h5 {
+.post_content{
+    font-size: 18px;
     margin-left: 10px;
 }
-.mes-container .mes-msg {
-    margin-left: auto;
-    background-color: #ccc;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 14px;
-} */
-/* Messenger-chat details */
-/* #chat-body {
-    max-height: 70vh;
-    overflow-y: auto;
-}
-#chat-body::-webkit-scrollbar {
-    width: 6px;
-}
-#chat-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-#chat-body::-webkit-scrollbar-thumb {
-    background-color: #888;
-}
-.chat-box-sent,
-.chat-box-received {
-    max-width: 70%;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-}
-.chat-box-sent {
-    background-color: #dcf8c6;
-    align-self: flex-end;
-}
-.chat-box-received {
-    background-color: #f1f0f0;
-    align-self: flex-start;
-}
-#myform {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-}
-#myform input[type="text"] {
-    flex: 1;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-}
-#myform button {
-    padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-} */
 
 /* PROFILE */
 /* Profile edit-setting */
@@ -808,18 +760,10 @@ label {
     background-color: #eaeaea;
 }
 
-.back-top {
-    background-color: #009688;
-    height: 15vh;
-  }
-  
-.back-main {
-background-color: #d9dbd5;
-height: 85vh;
-}
 
 .back-container {
-position: relative;
+    height: 100vh;
+    width: 30%;
 }
 
 .front-container {
@@ -841,21 +785,45 @@ min-height: 50px;
 }
 
 .profile-image {
-margin-top: 7px;
-height: 30px;
-width: 30px;
+height: 50px;
+width: 50px;
+border-radius: 50%;
 }
 
 .contacts {
-    margin-top: 200px;
-    width: 300px;
-background-color: #ffffff;
-min-height: 600px;
+    background-color: #ffffff;  
+    height: 100vh;
+    overflow-y: scroll;
+}
+.user_box{
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
 }
 
-.contact-table-scroll {
-overflow-y: scroll;
-height: 600px;
+.user_box .box{
+    margin-top: 10px;
+    border-bottom: 1px solid grey;
+    color: black;
+    padding-bottom: 10px;
+}
+
+.user{
+    display: flex;
+    flex-direction: row;
+}
+
+.user .name{
+    margin-left: 10px;
+}
+
+.user_box .box:hover{
+    text-decoration: underline;
+}
+
+.user_box .box:active{
+    color:black;
+    background-color: rgba(0,0,0,0.1);
 }
 
 .message-area {
@@ -863,14 +831,18 @@ background-color: #e4e1de;
 min-height: 600px;
 }
 
-.message-table-scroll {
-overflow-y: scroll;
-height: 550px;
+.message_box .message-table-scroll {
+    overflow-y: scroll;
+    width: 95%;
+    height: 700px;
+    background-color: white;
+    margin-top: 2%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+
 }
 
-.message-box {
-background-color: #f0f0f0;
-}
 
 /*  */
 .post-input-content {
@@ -889,3 +861,54 @@ background-color: #f0f0f0;
     margin-top: 10px;
 }
 
+.message_box{
+    width: 100%;
+    background-color: rgba(245, 245, 235, 0.6);
+}
+
+.message_box .conversation{
+    height: 15%;
+    margin-left: 3%;
+}
+
+.message_box .conversation .conversation_user{
+    display: flex; 
+    flex-direction: row;
+    padding-top: 7%;
+}
+
+.chat_box{
+    width:55%;
+}
+
+.sender_chat{
+    background-color: rgba(78, 237, 78, 0.3);
+    border-radius: 10px;
+    height:100%;
+    width: 100%;
+    text-align: center;
+    float: right;
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.receiver_chat{
+    background-color: rgba(141, 162, 248, 0.3);
+    border-radius: 10px;
+    height:100%;
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+    float: left;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+.message_box .conversation .message-table-scroll .table{
+    width: 100%;
+    height: 100%;
+}
+
+.table td{
+    border: none;
+}

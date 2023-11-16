@@ -108,8 +108,8 @@
                             {{article.created|timesince}} ago
                             {% if request.user == article.author %}
                             <span class="edit">
-                                <a href="/delete/{{article.author.id}}">Delete</a>
-                                <a href="/update/{{article.author.id}}">Update</a>
+                                <a href="/delete/{{article.id}}">Delete</a>
+                                <a href="/update/{{article.id}}">Update</a>
                             </span>
                             {% endif %}
                         </div>
@@ -174,27 +174,25 @@
         </div> 
     
         <div class="right">
-           <div class="You can know">
-                <div class="heading">
-                    <div class="card">
-                        <div class="card-header">
-                          知ってるかもしれません
-                        </div>
-                        <div class="card-body">                    
-                          <p class="card-text">
-                            {% for user1 in  alluser %}
-                                {% if user not in user1.followed_by.all and user != user1 %}
-                                    <a href="/user_page/{{user1.id}}" class="name" >
-                                    <img src="{{user1.avatar.url}}" class="photo_image"> 
-                                    </a>
-                                    <a href="/user_page/{{user1.id}}" class="name"><b>{{user1.first_name}} {{user1.last_name}}</b></a>
-                                    <a href="{% url 'user_page' user1.id  %}">@{{user1}} </a><br/>
-                                {%endif%}
-                            {% endfor %}</p>
-                        </div>
+            <div class="heading">
+                <div class="card">
+                    <div class="card-header">
+                    知ってるかもしれません
+                    </div>
+                    <div class="card-body">                    
+                    <p class="card-text">
+                        {% for user1 in  alluser %}
+                            {% if user not in user1.followed_by.all and user != user1 %}
+                                <a href="/user_page/{{user1.id}}" class="name" >
+                                <img src="{{user1.avatar.url}}" class="photo_image"> 
+                                </a>
+                                <a href="/user_page/{{user1.id}}" class="name"><b>{{user1.first_name}} {{user1.last_name}}</b></a>
+                                <a href="{% url 'user_page' user1.id  %}">@{{user1}} </a><br/>
+                            {%endif%}
+                        {% endfor %}</p>
                     </div>
                 </div>
-           </div>
+            </div>
         </div>
     </div>
     </main>

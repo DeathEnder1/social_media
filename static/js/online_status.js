@@ -32,11 +32,9 @@ online_status.onmessage = function(e){
         var user_to_change = document.getElementById(`${data.username}_status`)
         var small_status_to_change = document.getElementById(`${data.username}_small`)
         if(data.online_status == true){
-            user_to_change.style.color = 'green'
             small_status_to_change.innerHTML = '&#128994;'
         }
         else{
-            user_to_change.style.color = 'grey'
             small_status_to_change.innerHTML = '&#128308;'
         }
     }

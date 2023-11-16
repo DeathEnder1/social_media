@@ -61,7 +61,7 @@
                 Edit profile
             </a>
             {%else%}
-            <a href="/chat_room" class="active">
+            <a href="/chat_page/{{user.username}}" class="active">
                 <span class="icon">
                     <ion-icon name="chatbubbles-outline"></ion-icon>
                 </span>
@@ -175,9 +175,8 @@
                     
                     <div class="right">
                         {{item.created|timesince}} ago
-                        <a href="/update/{{item.id}}">Update</a>
-                        
-                        <a href="/delete/{{item.id}}" onclick="popup_delete">Delete</a>
+                        <a href="/update/{{item.id}}">Update</a>                   
+                        <a href="/delete/{{item.id}}">Delete</a>
                         <!-- <span class="edit">
                             <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
                         </span> -->
@@ -214,6 +213,23 @@
                             </button>
                             <div class="like-count{{item.id}} count">{{item.liked.count}}</div>
                         </form>
+
+                        <!-- Comment -->
+                        <div>
+                            {% if item.comment_set.all %}
+                            <div >
+                                {% for comment in item.comment_set.all %}
+                                    <p>{{comment.user}}:{{comment.body}}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                            <form method="POST" id = "{{item.id}}" class="comment-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{item.id}}>
+                                <input type="text" name="body">
+                                <button class="ui primary button" type="submit" name = "submit_commentform">Comment</button>
+                            </form>
+                        </div>
 
                         <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
                         <span><ion-icon name="share-social-outline"></ion-icon></span>
