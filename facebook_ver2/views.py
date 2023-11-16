@@ -2,9 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-import random
 from django.views.decorators.csrf import csrf_exempt
-
 from .models import *
 from .forms import *
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -14,46 +12,12 @@ import pusher
 from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
-        postform =PostForm()
-        commentform=CommentForm()
         user = Profiles.objects.get(id=request.user.id)
-        items = list(Profiles.objects.all())
-        alluser = random.sample(items, 3)
+        articles= Post.objects.all()
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
-        blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
-        articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
-
-        if request.method == "POST" :
-            if "submit_postform" in request.POST:
-                postform =PostForm(request.POST, request.FILES)
-                if postform.is_valid(): 
-                    formin = postform.save(commit=False)
-                    formin.author = user
-                    formin.save()
-                    # postform = PostForm()
-                    p_add = True
-                    return redirect('/')
-            
-            elif "submit_commentform" in request.POST:
-                commentform = CommentForm(request.POST)
-                if commentform.is_valid():
-                    formin = commentform.save(commit=False)
-                    formin.user = Profiles.objects.get(id = request.user.id)
-                    formin.post = Post.objects.get(id=request.POST.get('post_id'))
-                    formin.save()
-                response_data = {
-                    'comment': {
-                        'user': formin.user.username,
-                        'body': formin.body,
-                        }
-                    }
-                return(redirect('/'))
-                # return JsonResponse(response_data)
-
+        articles= Post.objects.exclude(author__in=blocked_users)
         context = {
-            'articles':articles,
-            'postform':postform,
-            'alluser' : alluser,
+            'articles':articles
         }
         return render(request, 'home.html',context)
     else: 
@@ -123,23 +87,8 @@ def delete(request, id):
             st.delete()
             return redirect('/user_page/'+str(uid))
         else:
-            return HttpResponse('You can not delete this post')
-    return render(request, 'delete.html', {'st':st})
-
-@login_required(login_url='login')
-def update(request, id):
-    st=Post.objects.get(id=id)
-    form =PostForm(instance=st)
-    uid=request.session.get('_auth_user_id')
-    if request.method=='POST':
-        form = PostForm(request.POST,request.FILES,instance=st)
-        if form.is_valid():
-            form.save()
-            return redirect('/user_page/'+str(uid))
-        else:
             return HttpResponse('You can not edit this post')
-    return render(request, 'update.html',{'form':form})
-        
+    return render(request, 'delete.html', {'st':st})
 
 @login_required(login_url='login')
 def setting(request):
@@ -149,9 +98,9 @@ def setting(request):
     form=Profile_Form(instance=user)
     if request.method=="POST":
         form=Profile_Form(request.POST, request.FILES,instance=user)
-        email_form = request.POST['email']
-        checkemail = Profiles.objects.filter(email=email_form)
-        if checkemail.count() and user.email != email_form:
+        email = request.POST['email']
+        checkemail = Profiles.objects.filter(email=email)
+        if checkemail.count():
             messages.error(request, 'Email Already Exist')
         elif form.is_valid():
             form.save()
@@ -161,40 +110,39 @@ def setting(request):
 @login_required(login_url='login')
 def user_page(request,id):
     user = Profiles.objects.get(id=id)   
-    # user2 = Profiles.objects.get(id = request.user.id)
     st = Post.objects.filter(author = id)
     postform =PostForm()
     commentform = CommentForm()
     p_add = False
     is_blocked = Block.objects.filter(blocker= request.user, blocked_user=Profiles.objects.get(id=id)).exists()
     if request.method == "POST" :
-        if "submit_postform" in request.POST:
-            postform =PostForm(request.POST, request.FILES)
-            if postform.is_valid(): 
-                formin = postform.save(commit=False)
-                formin.author = user
-                formin.save()
-                # postform = PostForm()
-                p_add = True
-                return redirect('/user_page/'+str(id))
+        aid = request.session.get('_auth_user_id')
+        current_user = Profiles.objects.get(id=aid)
+
+        if user in current_user.follows.all():
+            current_user.follows.remove(user)
+        else:
+            current_user.follows.add(user)
         
-        elif "submit_commentform" in request.POST:
-            commentform = CommentForm(data=request.POST)
-            if commentform.is_valid():
-                formin = commentform.save(commit=False)
-                formin.user = user
-                formin.post = Post.objects.get(id=request.POST.get('post_id'))
-                # commentform = CommentForm()
-                formin.save()
 
-        else:     
-            aid = request.session.get('_auth_user_id')
-            current_user = Profiles.objects.get(id=aid)
-
-            if user in current_user.follows.all():
-                current_user.follows.remove(user)
-            else:
-                current_user.follows.add(user)
+    if "submit_postform" in request.POST:
+        postform =PostForm(request.POST, request.FILES)
+        if postform.is_valid(): 
+            formin = postform.save(commit=False)
+            formin.author = user
+            formin.save()
+            # postform = PostForm()
+            p_add = True
+            return redirect('/user_page/'+str(id))
+        
+    if "submit_commentform" in request.POST:
+        commentform = CommentForm(data=request.POST)
+        if commentform.is_valid():
+            formin = commentform.save(commit=False)
+            formin.user = user
+            formin.post = Post.objects.get(id=request.POST.get('post_id'))
+            # commentform = CommentForm()
+            formin.save()
             
     
     context={'user':user,
@@ -233,14 +181,12 @@ def search(request):
         searched = request.POST['searched']
         search_type = request.POST.get('search_type', 'username')  # Sử dụng 'username' mặc định nếu không có giá trị được chọn
 
-        blocking_users = request.user.get_blocking_users()
-
         if search_type == 'username':
-            profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
+            profiles = Profiles.objects.filter(username__contains=searched)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
-            posts = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
-            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
+            articles = Post.objects.filter(content__contains=searched)
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'articles': articles})
     else:
         return render(request, 'search.html', {})
     
@@ -252,10 +198,12 @@ def like_unlike_post(request):
         post_id= request.POST.get('post_id')
         post= Post.objects.get(id=post_id)
         profile= Profiles.objects.get(id=user)
+
         if profile in post.liked.all():
             post.liked.remove(user)
         else:
             post.liked.add(user)
+
         like, created= Like.objects.get_or_create(user=profile, post_id=post_id)
 
         if not created:
@@ -265,37 +213,177 @@ def like_unlike_post(request):
                 like.value='Like'
         else:
             like.value='Like'
+
             post.save()
             like.save()
+
         data ={
             'value': like.value,
             'likes': post.liked.all().count()
         }
-        
+
         return JsonResponse(data, safe=False)
-    
+
     return redirect('/')
 
 @login_required(login_url='login')
+
 def chat_room(request):
-    users = Profiles.objects.exclude(username = request.user.username)
-    context = {
-        'users':users,
-    }
-    return render(request, 'chat_room.html',context)
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.all()
+
+    context = {'user':user,
+
+               'follows':follows}
+
+    return render(request,"chat_room.html",context)
+
+
+
 
 @login_required(login_url='login')
-def chat_page(request,username):
-    user_obj = Profiles.objects.get(username=username)
-    users = Profiles.objects.exclude(username = request.user.username)
-    if request.user.id > user_obj.id:
-        thread_name = f'chat_{request.user.id}-{user_obj.id}'
-    else:
-        thread_name = f'chat_{user_obj.id}-{request.user.id}'
-    message_obj = ChatModel.objects.filter(thread_name=thread_name)
-    context = {
-        'users': users,
-        'user': user_obj,
-        'messages':message_obj
-    }
-    return render(request, 'chat_page.html',context)
+
+def chat_details(request,id):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.get(id=id)
+
+    form = ChatMessageForm()
+
+    chats = ChatMessage.objects.all()
+
+    receive_chats = ChatMessage.objects.filter(msg_sender=follows,msg_receiver=user,seen=False)
+
+    receive_chats.update(seen=True)
+
+    receive_chats_json = [
+
+        {"id": chat.id, "body": chat.body} for chat in receive_chats
+
+    ]
+
+    if request.method == "POST":
+
+        form = ChatMessageForm(request.POST)
+
+
+
+
+        if form.is_valid():
+
+            chat_message = form.save(commit=False)
+
+            chat_message.msg_sender = user
+
+            chat_message.msg_receiver = follows
+
+            chat_message.save()
+
+            return redirect('chat_details',id =follows.id)
+
+
+
+
+    context = {'follows':follows,
+
+               'form':form,
+
+               'user':user,
+
+               'chats':chats,
+
+               "receive_chats": json.dumps(receive_chats_json)}
+
+    request.session['last_received_message'] = receive_chats.last().id if receive_chats.exists() else None
+
+    return render(request,"chat_details.html",context)
+
+
+
+
+@login_required(login_url='login')
+
+def sent_messages(request,id):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.get(id=id)
+
+    data = json.loads(request.body)
+
+    new_chat = data["msg"]
+
+    new_chat_message = ChatMessage.objects.create(body = new_chat,msg_sender = user,msg_receiver = follows,seen = False)
+
+    pusher_client = pusher.Pusher(
+
+        app_id = "1695930",
+
+        key = "62781415eb4ada65ca96",
+
+        secret = "c41bf0167df3de120779",
+
+        cluster = "ap1",
+
+        ssl=True)
+
+    pusher_client.trigger('my-channel', 'my-event', {'msg': new_chat_message.body})
+
+    return JsonResponse(new_chat_message.body,safe=False)
+
+
+
+
+@login_required(login_url='login')
+
+def receive_messages(request,id):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.get(id=id)
+
+    chats = ChatMessage.objects.filter(msg_sender=follows,msg_receiver=user)
+
+    last_received_message = request.session.get('last_received_message')
+
+    arr = [{"id": chat.id, "body": chat.body} for chat in chats if chat.id != last_received_message]
+
+    return JsonResponse(arr, safe=False)
+
+
+
+
+
+
+
+@login_required(login_url='login')
+
+def chat_notification(request):
+
+    uid = request.user.id
+
+    user = Profiles.objects.get(id = uid)
+
+    follows = user.follows.all()
+
+    arr = []
+
+    for follow in follows:
+
+        chats = ChatMessage.objects.filter(msg_sender_id=follow,msg_receiver=user,seen = False)
+
+        arr.append(chats.count())
+
+    return JsonResponse(arr,safe=False)
+

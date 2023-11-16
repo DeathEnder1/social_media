@@ -20,14 +20,13 @@
             {% endif %}
         {% endfor %}
     </div>
-    <form action="" method="POST" id="myform">
+    <form action="" method="POST" id="myform" >
         {% csrf_token %}
         {{form.body}}
         <button type="submit" id="submit">  
             Send
         </button>
     </form>
-
     <script>
         function getCookie(name) {
             let cookieValue = null;

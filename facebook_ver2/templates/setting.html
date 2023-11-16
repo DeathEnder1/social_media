@@ -20,10 +20,8 @@
         </p>
         {% endif %}
         {{form.error}}
-        <div style="display: flex; justify-content: space-between;">
-            <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary">Return</a>
-            <input type="submit" value="submit" class="btn btn-primary">
-        </div>
+        <a href="{{request.META.HTTP_REFERER}}">Return</a>
+        <input type="submit" value="submit">
     </form>
 </div>
 {% endblock %}

@@ -21,17 +21,16 @@
                 <a href="/" class="menu-items">
                     <span><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
                 </a>
-                <a href="/following" class="menu-items active">
+                <a href="/following" class="menu-items">
                     <span><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
                 </a>
-                <a href="" class="menu-items">
+                <a href="/chat_home" class="menu-items active">
                     <span><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
                 </a>
                 <a href="{% url 'logout' %}" class="menu-items">
                     <span><ion-icon name="log-out-outline"></ion-icon></span><h3>Logout</h3>
                 </a>
             </div>
-            
 
             <!-- CREATE-BOX-LEFT -->
             <label for="create-post" class="btn btn-primary">CREATE POST</label>
@@ -85,17 +84,13 @@
                 <!-- INTERACT-POST -->
                 <div class="interact">
                     <div class="interact_button">
-                        <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
+                        <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form">
                             {% csrf_token %}
                             <input type="hidden" name="post_id" value={{article.id}}>
-                            <button type="submit"  class="like-btn{{article.id}} icon1">
-                                {% if request.user in article.liked.all%}
-                                    <i><ion-icon name="heart-dislike-outline" ></ion-icon></i>
-                                {%else%}
-                                    <i><ion-icon name="heart-outline"></ion-icon></i> 
-                                {%endif%}
+                            <button type="submit"  class="like-btn{{article.id}}">
+                                Like
                             </button>
-                            <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
+                            <div class="like-count{{article.id}}">{{article.liked.count}}</div>
                         </form>
 
                         <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>

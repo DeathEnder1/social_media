@@ -31,14 +31,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'facebook_ver2',
+    'facebook_ver2'
 ]
 
 AUTH_USER_MODEL = 'facebook_ver2.Profiles'
@@ -58,7 +57,7 @@ ROOT_URLCONF = 'social_media.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,25 +70,18 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'social_media.wsgi.application'
-ASGI_APPLICATION = "social_media.asgi.application"
+WSGI_APPLICATION = 'social_media.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    }
-}
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'social_media',
         'USER': 'root',
-        'PASSWORD': 'quy1412003',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -137,7 +129,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-STATIC_ROOT = BASE_DIR / 'static/styles/'
+STATIC_ROOT=BASE_DIR / 'static/styles/'
 MEDIA_ROOT = BASE_DIR / 'static/images/'
 
 # Default primary key field type
