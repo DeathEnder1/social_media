@@ -29,36 +29,23 @@ document.addEventListener('click', (event) => {
   }
 });
 
-// edit post dropdown
-var editmenu = document.querySelector("edit_menu");
+//
+function editMenuToggle(event) {
+  event.stopPropagation();
+  const dropdownContent = event.currentTarget.nextElementSibling;
+  dropdownContent.style.display = dropdownContent.style.display === 'none' ? 'block' : 'none';
+}
 
-// function editMenuToggle(event) {
-//     event.stopPropagation(); // Ngăn chặn sự kiện onclick sẽ hoạt động lên các phần tử cha
-
-//     // Lấy id của bài viết được nhấp vào
-//     var postId = event.target.nextElementSibling.dataset.id;
-
-//     editmenu.classList.toggle("edit_menu_height");
-    
-//     // Hiển thị dropdown chỉ khi nhấp vào nút của bài viết hiện tại
-//     if (editmenu.classList.contains("edit_menu_height")) {
-//         // Lấy tất cả các div chứa id bài viết
-//         var postIds = document.querySelectorAll('post_id');
-
-//         // Lặp qua và ẩn dropdown cho các bài viết khác (nếu có)
-//         for (var i = 0; i < postIds.length; i++) {
-//             var id = postIds[i].dataset.id;
-//             if (id !== postId) {
-//                 var otherDropdown = document.querySelector("edit_menu_container post_id[data-id='${id}']").parentElement.querySelector("edit_menu");
-//                 otherDropdown.classList.remove("edit_menu_height");
-//             }
-//         }
-//     }
-// }
-// // Đóng dropdown khi nhấp vào bất kỳ vị trí nào trên trang
-// document.addEventListener('click', function(event) {
-//     editmenu.classList.remove("edit_menu_height");
-// });
+// Hide dropdown menu when clicking outside
+document.addEventListener('click', function (event) {
+  const dropdowns = document.getElementsByClassName('dropdown-content');
+  for (let i = 0; i < dropdowns.length; i++) {
+    const dropdown = dropdowns[i];
+    if (dropdown.style.display === 'block' && !dropdown.contains(event.target)) {
+      dropdown.style.display = 'none';
+    }
+  }
+});
 
 
 // 

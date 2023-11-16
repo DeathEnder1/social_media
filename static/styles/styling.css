@@ -817,6 +817,37 @@ label {
     color: var(--color-danger); 
 }
 
+/* middle right post show */
+.dropdown {
+    margin-left: 1rem;
+  }
+  
+  .dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    z-index: 1;
+  }
+  
+  .dropdown a {
+    display: block;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: black;
+  }
+  
+  .dropdown a:last-child {
+    margin-bottom: 0;
+  }
+  
+  .dropdown hr {
+    margin: 8px 0;
+    border: 0;
+    border-top: 1px solid #ccc;
+  }
+
 /*  */
 .padding .button:active{
     background-color: #eaeaea;
@@ -970,6 +1001,7 @@ min-height: 600px;
 
 .table td{
     border: none;
+}
 .name{
     color: black;
     font-size: 18px;

@@ -111,27 +111,18 @@
                             {{article.created|timesince}} ago
                             {% if request.user == article.author %}
 
-                            <div class="post_id" data-id="post_id" onclick="editMenuToggle()">
-                                <a href="#" style="margin-left: 1rem">
-                                    <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-                                </a>
-                            </div>
-
-                            <div class="edit_menu">
-                                <div class="edit_menu_inner">
-                                    <!-- Update edit -->
-                                    <div class="icon3_edit">
-                                        <a href="/update/{{article.id}}">
-                                            <span style="color: var(--color-danger)"><ion-icon name="settings-outline"></ion-icon></span>Update
-                                        </a>
-                                    </div>
-                                    <hr>
-                                    <!-- Delete edit -->
-                                    <div class="icon3_edit">
-                                        <a href="/delete/{{article.id}}">
-                                            <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline"></ion-icon></span>Delete
-                                        </a>
-                                    </div>
+                            <div class="dropdown">
+                                <ion-icon name="ellipsis-horizontal-outline" onclick="editMenuToggle(event)"></ion-icon>
+                                <div class="dropdown-content" style="display: none;">
+                                  <!-- Update edit -->
+                                  <a href="/update/{{article.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="settings-outline"></ion-icon></span>Update
+                                  </a>
+                                  <hr>
+                                  <!-- Delete edit -->
+                                  <a href="/delete/{{article.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline"></ion-icon></span>Delete
+                                  </a>
                                 </div>
                             </div>
                             {% endif %}
@@ -170,7 +161,8 @@
                                 {% if article.comment_set.all %}
                                 <div class="cmt_result">
                                     {% for comment in article.comment_set.all %}
-                                        <p class="cmt_content">{{comment.user}}:{{comment.body}}</p>
+                                    {{comment.user}}
+                                        <p class="cmt_content">:{{comment.body}}</p>
                                     {% endfor %}
                                 </div>
                                 {% endif %}
