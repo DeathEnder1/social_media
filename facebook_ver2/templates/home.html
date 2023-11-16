@@ -110,6 +110,7 @@
                         <div class="right" style="display: flex; align-items: center">
                             {{article.created|timesince}} ago
                             {% if request.user == article.author %}
+
                             <div class="post_id" data-id="post_id" onclick="editMenuToggle()">
                                 <a href="#" style="margin-left: 1rem">
                                     <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
@@ -196,6 +197,7 @@
         </div> 
     
         <div class="right">
+
             <div class="card">
                 <div class="card-header">
                     You may know

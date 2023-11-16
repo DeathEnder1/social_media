@@ -14,6 +14,7 @@
                     <div class="border_avatar_home">
                         <img src="{{request.user.avatar.url}}" class="photo_image">
                     </div>
+                  
                     <div style="display: flex; flex-direction:column;">
                         <p class="name">{{request.user.first_name}} {{request.user.last_name}}</p>
                         <p class="mention">@{{request.user}}</p>
@@ -43,7 +44,7 @@
         
         <div class="middle">
             {% for article in articles %}
-            {% if article.author in user.follows.all %}
+            {% if article.author in follows %}
             <div class="post_container">
                 <!-- POST -->
                 <div class="post" >
@@ -81,6 +82,7 @@
                     <!-- INTERACT-POST -->
                     <div class="interact">
                         <div class="interact_button">
+                            <!-- Like - Unlike -->
                             <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
                                 {% csrf_token %}
                                 <input type="hidden" name="post_id" value={{article.id}}>
@@ -93,6 +95,23 @@
                                 </button>
                                 <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
                             </form>
+                            
+                            <!-- Comment -->
+                            <div>
+                                {% if article.comment_set.all %}
+                                <div >
+                                    {% for comment in article.comment_set.all %}
+                                        <p>{{comment.user}}:{{comment.body}}</p>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <form method="POST" id = "{{article.id}}" class="comment-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="post_id" value={{article.id}}>
+                                    <input type="text" name="body">
+                                    <button class="ui primary button" type="submit" name = "submit_commentform">Comment</button>
+                                </form>
+                            </div>
 
                             <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
                             <span><ion-icon name="share-social-outline"></ion-icon></span>
