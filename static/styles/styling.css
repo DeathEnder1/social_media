@@ -8,8 +8,8 @@
     --color-gray: hsl(252, 15%, 65%);
     --color-primary: hsl(252, 75%, 60%);
     --color-secondary: hsl(252, 100%, 90%);
-    --color-success: hsl(120, 95%, 65%);
-    --color-danger: hsl(347, 82%, 78%);
+    --color-success: hsl(120, 79%, 36%);
+    --color-danger: hsl(211, 82%, 78%);
     --color-dark: hsl(252, 30%, 10%);
     --color-black: hsl(252, 30%, 10%);
     --color-gradient: linear-gradient(to right, #e2336b, #fcac46);
@@ -36,7 +36,7 @@
 body {
     background: var(--color-light);
     color: var(--color-dark);
-    overflow: scroll;
+    overflow-y: scroll;
     font-family: Lucida Sans Unicode;
 }
 
@@ -89,6 +89,13 @@ nav .nav_container .right {
 nav .search-bar input[type="search"]::placeholder{
     color: var(--color-gray);
 }
+/* Search page username vs posts */
+.post_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .avatar {
     display: flex;
@@ -215,7 +222,6 @@ h1 {
     font-size: 2em;
     color: #100505;
     text-align: center;
-    margin: 0;
 }
 
 .form_box {
@@ -286,8 +292,8 @@ h1 {
 /* button submit sign up + sign in */
 .submit_button {
     border-radius: 20px;
-	border: 1px solid #FF4B2B;
-	background-color: #FF4B2B;
+	border: 1px solid var(--color-danger);
+	background-color: var(--color-danger);
 	color: #FFFFFF;
 	font-size: 12px;
 	font-weight: bold;
@@ -533,13 +539,13 @@ textarea {
     box-shadow: 0 0 5px rgba(0,0,0,0.2);
     border-radius: 10px;
 }
-.cmt_name {
-    font-weight: bold;
-    color: black;
-}
 .cmt_content p {
     word-wrap: break-word;
     width: 100%; 
+}
+.cmt_name {
+    font-weight: bold;
+    color: black;
 }
 
 /* middle-interact */
@@ -683,12 +689,11 @@ label {
     position: absolute;
     width: calc(100% - 760px);
     min-height: 100vh;
-    top: 0;
     border-radius: 1rem 0 0 1rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 5rem;
+    margin-top: 5.3rem;
     margin-left: 760px;
 }
 
@@ -734,7 +739,6 @@ label {
     font-size: 0.938rem;
     font-weight: 400;
 }
-
 /*  */
 .profile-sidebar .about {
     display: flex;
@@ -752,7 +756,6 @@ label {
     font-size: 0.938rem;
     font-weight: 400;
 }
-
 /*  */
 .profile-sidebar .menu a {
     width: 100%;
@@ -787,6 +790,53 @@ label {
     width: 2px;
     height: 17px;
     background: var(--color-danger);
+}
+
+/* profile hơm follow */
+.profile-home_follow {
+    display: flex;
+    justify-content: center;
+}
+.column {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 7rem;
+}
+.follow_users {
+    margin-top: 20px;
+}
+.follow_user_wrapper {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    padding: 30px;
+    padding-bottom: 50px;
+    padding-right: 40px;
+    margin-bottom: 50px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    transform: scale(1.5);
+}
+.follow_user {
+    border-radius: 50%; 
+    border: 2px solid var(--color-danger); 
+    width: 60px; 
+    height: 60px; 
+    padding: 3.5px; 
+    box-sizing: border-box;
+}
+.followed-user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+.followed-user h3 {
+    margin: 0;
 }
 
 /* blank box pop up create post */
@@ -914,6 +964,7 @@ border-radius: 50%;
     margin-top: 10px;
     border-bottom: 1px solid grey;
     color: black;
+    padding-left: 1rem;
     padding-bottom: 10px;
 }
 
@@ -949,7 +1000,6 @@ min-height: 600px;
     overflow: auto;
     display: flex;
     flex-direction: column-reverse;
-
 }
 
 
@@ -970,6 +1020,7 @@ min-height: 600px;
     margin-top: 10px;
 }
 
+/* messenger box */
 .message_box{
     width: 100%;
     background-color: rgba(245, 245, 235, 0.6);
@@ -986,7 +1037,6 @@ min-height: 600px;
 .chat_box{
     width:55%;
 }
-
 .sender_chat{
     background-color: rgba(78, 237, 78, 0.3);
     border-radius: 10px;
@@ -997,7 +1047,6 @@ min-height: 600px;
     margin-right: 10px;
     font-size: 20px;
 }
-
 .receiver_chat{
     background-color: rgba(141, 162, 248, 0.3);
     border-radius: 10px;
@@ -1009,10 +1058,23 @@ min-height: 600px;
     margin-left: 10px;
     font-size: 20px;
 }
-
 .message_box .conversation .message-table-scroll .table{
     width: 100%;
     height: 100%;
+}
+.message_box .message-input {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+}
+.message-input .chat_mes {
+    width: 97%;
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+    border: 1px solid #ccc;
+    padding: 0.5rem; 
+    resize: vertical;
 }
 
 .table td{
@@ -1023,17 +1085,14 @@ min-height: 600px;
     font-size: 18px;
     font-weight: bold;
 }
-
 .user_name a:hover{
     text-decoration: underline;
 }
-
 .mention{
     color: black;
     font-size: 16px;
     opacity: 70%;
 }
-
 .post_content{
     font-size: 18px;
     margin-left: 10px;

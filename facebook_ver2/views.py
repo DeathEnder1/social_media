@@ -18,7 +18,7 @@ def home(request):
         commentform=CommentForm()
         user = Profiles.objects.get(id=request.user.id)
         items = list(Profiles.objects.all())
-        alluser = random.sample(items, 1)
+        alluser = random.sample(items, 3)
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
         blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
         articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
@@ -205,7 +205,7 @@ def user_page(request,id):
                 formin.post = Post.objects.get(id=request.POST.get('post_id'))
                 # commentform = CommentForm()
                 formin.save()
-            return(redirect('/user_page/{{request.user.id}}'))
+                return redirect('/user_page/'+str(id))
 
         else:     
             aid = request.session.get('_auth_user_id')
@@ -328,10 +328,11 @@ def follow_list(request,id):
     aid = request.session.get('_auth_user_id')
     current_user = Profiles.objects.get(id=aid)
 
-    if user in current_user.follows.all():
-        current_user.follows.remove(user)
-    else:
-        current_user.follows.add(user)
+    if request.method == "POST":
+        if user in current_user.follows.all():
+            current_user.follows.remove(user)
+        else:
+            current_user.follows.add(user)
     context = {
         'user':user,
         'follower':follower,

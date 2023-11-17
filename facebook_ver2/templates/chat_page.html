@@ -6,8 +6,7 @@
 {% block content %}
 <div style="display: flex; flex-direction: row;  position: fixed; width: 100%;">
     
-    <div class="back-container">
-        
+    <div class="back-container">   
         <div class="contacts">
             <div class="user_box">
                 {% for user in users %}
@@ -15,7 +14,7 @@
                 
                     <div class="user">
                         <img src="{{user.avatar.url}}" alt="{{user.avatar}}" class="profile-image">        
-                        <div class="name">
+                        <div class="name" style="margin-left: 1rem;">
                             {{user.first_name}} {{user.last_name}} <br>
                             @{{user.username}}
                         </div>
@@ -25,11 +24,15 @@
             </div>
         </div>
     </div>
+
     <div class="message_box" >
         <div class="conversation">
             <div class="conversation_user">
                 <img src="{{user.avatar.url}}" alt="" class="profile-image">
-                <span class="ml-2">{{user.username}}</span>
+                <span class="ml-2">
+                    {{user.first_name}} {{user.last_name}} <br>
+                    @{{user.username}}
+                </span>
                 {% if user.online_status %}
                     <small id="{{user.username}}_small">&#128994;</small>
                 {% else %}
@@ -42,24 +45,24 @@
                         {% for message in messages %}
                             {% if message.sender == request.user.username %}
                             <tr>
-                                <td style="border-right: 1px solid black;">
+                                <td style="border-right: 1px solid black; border-top: none;">
                                     <p class="bg-success p-2 mt-2 mr-5 shadown-sm text-white float-right rounded" style="word-wrap: break-word; width: 300px;" >
                                         {{message.message}}
                                     </p>
                                 </td>
-                                <td>
+                                <td style="border-top: none;">
                                     <p><small>{{message.timestamp|time:'H:i'}}</small>
                                     </p>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td style="border-right: 1px solid black;">
+                                <td style="border-right: 1px solid black; border-top: none;">
                                     <p class="bg-primary p-2 mt-2 mr-5 shadown-sm text-white float-left rounded" style="word-wrap: break-word; width: 300px;">
                                         {{message.message}}
                                     </p>
                                 </td>
-                                <td>
+                                <td style="border-top: none;">
                                     <p><small>{{message.timestamp|time:'H:i'}}</small>
                                     </p>
                                 </td>
@@ -69,13 +72,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="message-box">
-                <div class="col-sm-8">
-                        <input type="text" class="form-control" id="message_input" placeholder="Write message...">
+            <div class="message-input">
+                <div style="width: 90%;">
+                        <input type="text" class="chat_mes" id="message_input" placeholder="Write message..." required>
                 </div>
-                <div class="col-sm-2 mt-1">
-                    <div class="control">
-                        <button class="btn btn-success" id="chat-message-submit">Send</button>
+                <div>
+                    <div class="mes_send">
+                        <button class="btn btn-primary" style="border-radius: 100px; padding: 10px;" id="chat-message-submit">Send</button>
                     </div>
                 </div>
 

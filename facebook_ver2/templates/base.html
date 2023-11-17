@@ -9,8 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
     integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
     crossorigin="anonymous"></script>
-
-
+    
     <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
 
     <!-- <link rel="icon" href="/static/styles/favicon.ico"> -->
@@ -24,7 +23,7 @@
             <div class="left">
                 <!-- LOGO-WEB-PAGE -->
                 <a href="/">
-                    <img src="/static/styles/Logo.png" class="photo_image">       
+                    <img src="static\styles\Logo1.jpg" class="photo_image">       
                 </a>
                 <!-- SEARCH-BOX -->
                 {% if request.user.is_authenticated %}
@@ -149,6 +148,21 @@
 
     });
 });
+</script>
+
+<script>
+    $( document ).ready(function() {
+        let display = false
+        $(".cmt_btn").click(function () {
+            if (display===false) {
+                $(this).next(".comment").show("slow");
+                display=true
+            } else {
+                $(this).next(".comment").hide("slow");
+                display=false
+            }  
+        })
+    });
 </script>
 
 

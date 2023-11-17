@@ -65,9 +65,6 @@
                 </span>
                 Edit profile
             </a>
-                                    {% for follow in follower %}
-                                        {{follow}}
-                                    {% endfor %}
             {%else%}
             <a href="/user_page/{{user.id}}" class="active">
                 <span class="icon">
@@ -124,10 +121,24 @@
                     </form>
                 {% endif %}
                 </div>
-                                    {% for follow in follower %}
-                                        {{follow}}
-                                    {% endfor %}
             {%endif%}
+        </div>
+    </div>
+
+    <div class="profile-home_follow">
+        <div class="column">
+            <div class="follow_users">
+                {% for follow in follower %}
+                <div class="follow_user_wrapper">
+                    <div class="follow_user">
+                        <a href="/user_page/{{follow.id}}" class="name">
+                            <img src="{{follow.avatar.url}}" class="photo_image">
+                        </a>
+                        <h3>{{follow}}</h3>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 

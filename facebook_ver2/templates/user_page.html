@@ -53,7 +53,7 @@
                 </span>
                 Following
             </a>
-            <a href="/chat_page/{{user}}" class="active">
+            <a href="/chat_room" class="active">
                 <span class="icon">
                     <ion-icon name="chatbubbles-outline"></ion-icon>
                 </span>
@@ -192,22 +192,20 @@
 
                         <div class="right" style="display: flex; align-items: center">
                             {{item.created|timesince}} ago
-                            {% if request.user == user %}
                             <div class="dropdown">
                                 <ion-icon name="ellipsis-horizontal-outline" onclick="editMenuToggle(event)"></ion-icon>
                                 <div class="dropdown-content" style="display: none;">
                                   <!-- Update edit -->
                                   <a href="/update/{{item.id}}">
-                                    <span style="color: var(--color-danger)"><ion-icon name="settings-outline"></ion-icon></span>Update
+                                    <span style="color: var(--color-danger)"><ion-icon name="settings-outline" style="margin-right: 0.5rem;"></ion-icon></span>Update
                                   </a>
                                   <hr>
                                   <!-- Delete edit -->
                                   <a href="/delete/{{item.id}}">
-                                    <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline"></ion-icon></span>Delete
+                                    <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline" style="margin-right: 0.5rem;"></ion-icon></span>Delete
                                   </a>
                                 </div>
                             </div>
-                            {% endif %}
                         </div>
                     </div>
 
@@ -240,10 +238,19 @@
                             <div class="like-count{{item.id}} count">{{item.liked.count}}</div>
                         </form>
 
+                        <button class="cmt_btn" style="background: none; font-size: 1rem; margin-bottom: 1rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.4); padding: 2px; font-size: 15px;">
+                            <div style="display: flex; flex-direction: row; margin-left: 0.5rem;">
+                                <ion-icon name="chatbox-ellipses-outline" class="icon1" style="color: var(--color-success);"></ion-icon>
+                                <div class="count">
+                                    {{item.comment_set.all.count}}
+                                </div>
+                            </div>
+                        </button>
+
                         <!-- Comment -->
                         <div class="comment">
-                            {% if article.comment_set.all %}
-                            {% for comment in article.comment_set.all %}
+                            {% if item.comment_set.all %}
+                            {% for comment in item.comment_set.all %}
                             <div class="cmt_result">
                                 <a href="/user_page/{{comment.user.id}}" class="cmt_name">
                                     <img src="{{comment.user.avatar.url}}" class="cmt_photo"> 
@@ -256,21 +263,16 @@
                             {% endfor %}
                             {% endif %}
                         </div>
-                        <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
+                        <form method="POST" id = "{{item.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
                             {% csrf_token %}
-                            <input type="hidden" name="post_id" value={{article.id}}>
-                            <input type="text" name="body" class="cmt_input" placeholder="Get comment">
+                            <input type="hidden" name="post_id" value={{item.id}}>
+                            <input type="text" name="body" class="cmt_input" placeholder="Get comment" required>
                             <button class="btn btn-primary" style="margin-left: 1rem; display: flex; align-items: center;" type="submit" name = "submit_commentform">
                                 <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
                                 Comment
                             </button>
                         </form>
                     </div>
-                </div>
-    
-                <!-- VIEW-POST -->
-                <div class="view-post">
-                    <div class="comments text-muted">View all ... comments</div>
                 </div>
             </div>
         </div>
