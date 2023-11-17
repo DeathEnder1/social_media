@@ -1,26 +1,168 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% block tile %}Mặt sách vơ 2{% endblock tile %}
 
-{% block content%}
-<center>
-    {% if searched %}
-        {% if search_type == 'username' %}
-            <h1>You Searched for {{ searched }} by Username</h1>
-            <br/>
-            {% for profile in profiles %}
-                <a href="{% url 'user_page' profile.id %}">{{ profile }}</a><br/>
-            {% endfor %}
-        {% elif search_type == 'post' %}
-            <h1>You Searched for {{ searched }} by Post</h1>
-            <br/>
-            {% for post in posts %}
-            <h2>{{ post.content }}</h2> <!-- Hiển thị nội dung của bài viết -->
-            <p>Posted by: <a href="{% url 'user_page' post.author_id %}">{{ post.author }}</a></p> <!-- Hiển thị tên người đăng bài viết -->
-            <hr>
-            {% endfor %}
+{%block content%}
 
-        {% endif %}
-    {% else %}
-        <h1>Hey! You Forgot to Search!!</h1>
-    {% endif %}
-    </center>
-{% endblock %}
+{% if request.user.is_authenticated %}
+    <main>
+        <div class="container">
+            <div class="left">
+                <a href="/user_page/{{request.user.id}}" class="sidebar-profile">
+                    <div class="profile_avatar">
+                        <img src="{{request.user.avatar.url}}" class="photo_image">
+                        <p class="">{{request.user.first_name}} {{request.user.last_name}}<br>@{{request.user}}</p>
+                    </div>
+                </a>
+        
+                <!-- SIDEBAR -->
+                <div class="sidebar-left">
+                    <a href= "/" class="menu-items">
+                        <span><ion-icon name="home-outline"></ion-icon></span><h3>Home</h3>
+                    </a>
+                    <a href="/following" class="menu-items ">
+                        <span><ion-icon name="checkmark-circle-outline"></ion-icon></span><h3>Follow</h3>
+                    </a>
+                    <a href="/chat_room" class="menu-items ">
+                        <span><ion-icon name="chatbubbles-outline"></ion-icon></span><h3>Messages</h3>
+                    </a>
+                    <a href="{% url 'logout' %}" class="menu-items ">
+                        <span><ion-icon name="log-out-outline"></ion-icon></span><h3>Logout</h3>
+                    </a>
+                </div>
+
+                <!-- CREATE-BOX-LEFT -->
+                <label for="create-post" class="btn btn-primary">CREATE POST</label>
+            </div>
+            
+            <div class="middle">
+                {% if searched %}
+                    {% if search_type == 'username' %}
+                        <h1>You Searched for {{ searched }} by Username</h1><br/>
+                        {% for profile in profiles %}
+                        <div class="post_container">
+                            <div class="header">
+                                <div class="post" >
+                                    <!-- INFOR'S POST -->
+                                    <div class="user_name">
+                                        <a href="{% url 'user_page' profile.id %}" class="name" >
+                                            <img src="{{profile.avatar.url}}" class="photo_image"> 
+                                        </a> 
+                                        <div>
+                                            <a href="{% url 'user_page' profile.id %}" class="name">{{profile.first_name}} {{profile.last_name}}</a><br>
+                                            <a href="{% url 'user_page' profile.id %}" class="mention">@{{profile.username}}</a>
+                                        </div>
+                                        {{profile.bio}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                            
+                        {% endfor %}
+                    {% elif search_type == 'post' %}
+                        <h1>You Searched for {{ searched }} by Post</h1>
+                        {% for article in articles %}
+                            <div class="post_container">
+                                <div class="post" >
+                                    <!-- INFOR'S POST -->
+                                    <div class="header">
+                                        <div class="user_name">
+                                            <a href="/user_page/{{article.author.id}}" class="name" >
+                                                <img src="{{article.author.avatar.url}}" class="photo_image"> 
+                                            </a> 
+                                            <div>
+                                                <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a><br>
+                                                <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
+                                            </div>
+                                        </div>
+                                        <div class="right">
+                                            {{article.created|timesince}} ago
+                                            <span class="edit">
+                                                <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                                            </span>
+                                        </div>
+                                    </div>
+                        
+                                    <!-- CONTENT-POST -->
+                                    <div class="content">
+                                        <div class="post_content">
+                                            {{article.content|linebreaks}}
+                                        </div>    
+                                        <div>
+                                            {% if article.image != '' %}
+                                                <img src="{{article.image.url}}" class="post_image">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                        
+                                    <!-- INTERACT-POST -->
+                                    <div class="interact">
+                                        <div class="interact_button">
+                                            <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="post_id" value={{article.id}}>
+                                                <button type="submit"  class="like-btn{{article.id}} icon">
+                                                    {% if request.user in article.liked.all%}
+                                                        <i><ion-icon name="heart-dislike-outline" ></ion-icon></i>
+                                                    {%else%}
+                                                        <i><ion-icon name="heart-outline"></ion-icon></i> 
+                                                    {%endif%}
+                                                </button>
+                                                <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
+                                            </form>
+                                            <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                                            <span><ion-icon name="share-social-outline"></ion-icon></span>
+                                        </div>
+
+                                        <div class="bookmark">
+                                            <span><ion-icon name="bookmark-outline"></ion-icon></span>
+                                        </div>
+                                    </div>
+                        
+                                    <!-- VIEW-POST -->
+                                    <div class="view-post">
+                                        <div class="comments text-muted">View all ... comments</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% endif %}
+                {% else %}
+                    <h1>Hey! You Forgot to Search!!</h1>
+                {% endif %}
+            </div> 
+        
+            <div class="right">
+                <div class="messages">
+                    <div class="heading">
+                        <h3>Messages</h3>
+                        <ion-icon name="create-outline"></ion-icon>
+                    </div>
+
+                    <div class="search-bar">
+                        <ion-icon name="search-circle-outline"></ion-icon>
+                        <input type="search" placeholder="Search messages" id="message-search">
+                    </div>
+
+                    <div class="category">
+                        <h4 class="active">Primary</h4>
+                        <h4>General</h4>
+                        <h4 class="message-requests">Requests</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endif %}
+
+{%endblock content%}
+
+{%block script%}
+<script>
+$(document).ready(function(){
+    console.log('Working')
+})
+</script>
+{%endblock script%}
+Viết cho Nghiêm Đạt

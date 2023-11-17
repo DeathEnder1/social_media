@@ -180,8 +180,7 @@ def setting(request):
 
 @login_required(login_url='login')
 def user_page(request,id):
-    user = Profiles.objects.get(id=id)   
-    # user2 = Profiles.objects.get(id = request.user.id)
+    user = Profiles.objects.get(id=id)
     st = Post.objects.filter(author = id)
     postform =PostForm()
     commentform = CommentForm()
@@ -223,7 +222,7 @@ def user_page(request,id):
              'postform':postform,
              'commentform ':commentform ,
              'p_add':p_add,
-             'is_blocked':is_blocked
+             'is_blocked':is_blocked,
              }
 
     return render(request,'user_page.html',context)
@@ -260,8 +259,8 @@ def search(request):
             profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
-            posts = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
-            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
+            articles = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'articles': articles})
     else:
         return render(request, 'search.html', {})
     
@@ -320,3 +319,22 @@ def chat_page(request,username):
         'messages':message_obj
     }
     return render(request, 'chat_page.html',context)
+
+@login_required(login_url='login')
+def follow_list(request,id):
+    user = Profiles.objects.get(id=id)
+    st = Post.objects.filter(author = id)
+    follower = user.follows.all()
+    aid = request.session.get('_auth_user_id')
+    current_user = Profiles.objects.get(id=aid)
+
+    if user in current_user.follows.all():
+        current_user.follows.remove(user)
+    else:
+        current_user.follows.add(user)
+    context = {
+        'user':user,
+        'follower':follower,
+        'st':st,
+    }
+    return render(request,'follow_list.html',context)

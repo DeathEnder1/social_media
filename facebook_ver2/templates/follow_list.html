@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{%load static %}
+
+{% block tile %}{{user.username}}{% endblock tile %}
+{% block content %}
+
+    <!-- Sidebar in profile -->
+    <div class="profile-sidebar">
+        <div class="profile">
+            <div class="avatar">
+                <img src="{{user.avatar.url}}">
+            </div>
+
+            <div class="name">
+                <h1>
+                {%if user.first_name%}
+                    <p>{{user.first_name}} {{user.last_name}} </p>
+                {%else%}
+                    <p>No name yet </p>
+                {% endif %}
+                </h1>
+            </div>
+
+            <span>@{{user.username}}</span>
+        </div>
+
+        <div class="about">
+            <div class="box">
+                <h3>{{st.count}}</h3>
+                <span>Posts</span>
+            </div>
+            <div class="box">
+                <h3>{{user.followed_by.count}}</h3>
+                <span>Followers</span>
+            </div>
+            <div class="box">
+                <h3>{{user.follows.count}}</h3>
+                <span>Following</span>
+            </div>
+        </div>
+
+        <div class="menu">  
+            {% if request.user == user%}
+            <a href="/user_page/{{request.user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Post
+            </a>
+            <a href="/follow_list/{{request.user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+                </span>
+                Following
+            </a>
+            <a href="/chat_page/{{user}}" class="active">
+                <span class="icon">
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                </span>
+                Message
+            </a>
+            <a href="profile_edit/" class="active" >
+                <span class="icon">
+                    <ion-icon name="create-outline"></ion-icon>
+                </span>
+                Edit profile
+            </a>
+                                    {% for follow in follower %}
+                                        {{follow}}
+                                    {% endfor %}
+            {%else%}
+            <a href="/user_page/{{user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Post
+            </a>
+            <a href="/follow_list/{{user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Following
+            </a>
+            <a href="/chat_page/{{user.username}}" class="active">
+                <span class="icon">
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                </span>
+                Message
+            </a>
+            <div class="active" style="display:flex; flex-direction:row">
+                <span class="icon">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                </span>
+                <div style="width: 100%;">
+                <form method = "POST" >
+                    {% csrf_token %}
+                    {% if request.user in user.followed_by.all %}
+                        <button type = "submit" class="button" >
+                            Unfollow user
+                        </button>
+                    {%else%}   
+                        <button type = "submit" class="button">      
+                            Follow user
+                        </button>
+                    {%endif%}
+                </form>
+                </div>
+            </div>
+            <div class="active" style="display:flex; flex-direction:row">
+                <span class="icon">
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                </span>
+                {% if not is_blocked%}
+                    <form method="post" action="{% url 'block_user' id=user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="block">
+                        <button type="submit" class="button">Block</button >
+                    </form>
+                {% else %}
+                    <form method="POST" action="{% url 'block_user' id=user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="unblock">
+                        <button type="submit" class="button">Unblock</button>
+                    </form>
+                {% endif %}
+                </div>
+                                    {% for follow in follower %}
+                                        {{follow}}
+                                    {% endfor %}
+            {%endif%}
+        </div>
+    </div>
+
+
+
+
+
+
+{%endblock content%}
+{% block javascript %}
+<script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}
+

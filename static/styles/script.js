@@ -29,13 +29,12 @@ document.addEventListener('click', (event) => {
   }
 });
 
-//
+//dropdown edit home
 function editMenuToggle(event) {
   event.stopPropagation();
   const dropdownContent = event.currentTarget.nextElementSibling;
   dropdownContent.style.display = dropdownContent.style.display === 'none' ? 'block' : 'none';
 }
-
 // Hide dropdown menu when clicking outside
 document.addEventListener('click', function (event) {
   const dropdowns = document.getElementsByClassName('dropdown-content');
@@ -46,7 +45,6 @@ document.addEventListener('click', function (event) {
     }
   }
 });
-
 
 // 
 var selDiv = "";

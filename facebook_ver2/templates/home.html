@@ -129,8 +129,7 @@
                         </div>
                     </div>
         
-                    <!-- CONTENT-POST -->
-                    
+                    <!-- CONTENT-POST -->              
                     <div class="post_content">
                         {{article.content|linebreaks}}
                     </div>    
@@ -144,6 +143,7 @@
                     <!-- INTERACT-POST -->
                     <div class="interact">
                         <div class="interact_button">
+                            <!-- Like - Unlike -->
                             <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
                                 {% csrf_token %}
                                 <input type="hidden" name="post_id" value={{article.id}}>
@@ -157,25 +157,31 @@
                                 <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
                             </form>
 
+                            <!-- Comment -->
                             <div class="comment">
                                 {% if article.comment_set.all %}
+                                {% for comment in article.comment_set.all %}
                                 <div class="cmt_result">
-                                    {% for comment in article.comment_set.all %}
-                                    {{comment.user}}
-                                        <p class="cmt_content">:{{comment.body}}</p>
-                                    {% endfor %}
+                                    <a href="/user_page/{{comment.user.id}}" class="cmt_name">
+                                        <img src="{{comment.user.avatar.url}}" class="cmt_photo"> 
+                                    </a>
+                                    <div class="cmt_content">
+                                        <a href="/user_page/{{request.user.id}}" class="cmt_name">{{comment.user}}</a>
+                                        <p>{{comment.body}}</p>
+                                    </div>
                                 </div>
+                                {% endfor %}
                                 {% endif %}
-                                <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content:space-between">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="post_id" value={{article.id}}>
-                                    <input type="text" name="body" class="cmt_input" placeholder="Get comment">
-                                    <button class="btn btn-primary" style="margin-left: 1rem;" type="submit" name = "submit_commentform">Comment</button>
-                                </form>
                             </div>
-
-                            <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
-                            <span><ion-icon name="share-social-outline"></ion-icon></span>
+                            <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <input type="text" name="body" class="cmt_input" placeholder="Get comment">
+                                <button class="btn btn-primary" style="margin-left: 1rem; display: flex; align-items: center;" type="submit" name = "submit_commentform">
+                                    <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                                    Comment
+                                </button>
+                            </form>
                         </div>
                     </div>
         

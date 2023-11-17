@@ -97,28 +97,30 @@
                             </form>
                             
                             <!-- Comment -->
-                            <div>
+                            <div class="comment">
                                 {% if article.comment_set.all %}
-                                <div >
-                                    {% for comment in article.comment_set.all %}
-                                        <p>{{comment.user}}:{{comment.body}}</p>
-                                    {% endfor %}
+                                {% for comment in article.comment_set.all %}
+                                <div class="cmt_result">
+                                    <a href="/user_page/{{comment.user.id}}" class="cmt_name">
+                                        <img src="{{comment.user.avatar.url}}" class="cmt_photo"> 
+                                    </a>
+                                    <div class="cmt_content">
+                                        <a href="/user_page/{{request.user.id}}" class="cmt_name">{{comment.user}}</a>
+                                        <p>{{comment.body}}</p>
                                     </div>
+                                </div>
+                                {% endfor %}
                                 {% endif %}
-                                <form method="POST" id = "{{article.id}}" class="comment-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="post_id" value={{article.id}}>
-                                    <input type="text" name="body">
-                                    <button class="ui primary button" type="submit" name = "submit_commentform">Comment</button>
-                                </form>
                             </div>
-
-                            <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
-                            <span><ion-icon name="share-social-outline"></ion-icon></span>
-                        </div>
-
-                        <div class="bookmark">
-                            <span><ion-icon name="bookmark-outline"></ion-icon></span>
+                            <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <input type="text" name="body" class="cmt_input" placeholder="Get comment">
+                                <button class="btn btn-primary" style="margin-left: 1rem; display: flex; align-items: center;" type="submit" name = "submit_commentform">
+                                    <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                                    Comment
+                                </button>
+                            </form>
                         </div>
                     </div>
         
@@ -133,25 +135,32 @@
         </div> 
     
         <div class="right">
-           <div class="messages">
-                <div class="heading">
-                    <h3>Messages</h3>
-                    <ion-icon name="create-outline"></ion-icon>
+
+            <div class="card">
+                <div class="card-header">
+                    You may know
                 </div>
 
-                <div class="search-bar">
-                    <ion-icon name="search-circle-outline"></ion-icon>
-                    <input type="search" placeholder="Search messages" id="message-search">
+                <div class="card-body" style="display:flex; flex-direction:column">                    
+                    <p class="card-text" >
+                        {% for user1 in  alluser %}
+                        <div style="display:flex; flex-direction:left">
+                            {% if user not in user1.followed_by.all and user != user1 %}
+                                <a href="/user_page/{{user1.id}}" class="name" >
+                                <img src="{{user1.avatar.url}}" class="photo_image"> 
+                                </a>
+                                <a href="/user_page/{{user1.id}}" class="name">
+                                    <div style="display: flex; flex-direction:column; margin-left:10px">
+                                        <p class="name">{{user1.first_name}} {{user1.last_name}}</p>
+                                        <p class="mention">@{{user1}}</p>
+                                    </div>
+                                </a>
+                            {%endif%}
+                        </div>
+                        {% endfor %}
+                    </p>
                 </div>
-
-                <div class="category">
-                    <h4 class="active">Primary</h4>
-                    <h4>General</h4>
-                    <h4 class="message-requests">Requests</h4>
-                </div>
-
-                <div></div>
-           </div>
+            </div>
         </div>
     </div>
     </main>
