@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="update_container">
+        <div class="update">
+            <form method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="update-form">
+                    <h2 style="display: flex; justify-content: center; margin-bottom: 1rem; color: var(--color-danger);">Update post</h2>
+                    {{form.content}}
+                    
+                    <div style="margin-top: 1rem; margin-bottom: 1rem;">
+                        {{form.image}}
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between;">
+                    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary">Return</a>
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endblock content %}

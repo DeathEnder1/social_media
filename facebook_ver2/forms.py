@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = Profiles
-        fields = ['username','email','password1','password2']
+        fields = ['username','first_name','last_name','password1','password2']
 
 class Profile_Form(forms.ModelForm):
     class Meta:
@@ -19,7 +19,6 @@ class PostForm(forms.ModelForm):
         fields = ["content","image"]
 
 class CommentForm(forms.ModelForm):
-    body = forms.CharField(label='',widget=forms.TextInput(attrs={'placeholder':'Add comment...'}))
     class Meta:
         model = Comment
         fields = ['body']
@@ -34,3 +33,4 @@ class BlockForm(forms.Form):
         choices=ACTIONS,
         widget=forms.RadioSelect,
     )
+

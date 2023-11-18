@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ChatMessage{% endblock title %}
+
+{% block content %}
+<div style="display: flex; flex-direction: row;  position: fixed; width: 100%;">
+    
+    <div class="back-container">   
+        <div class="contacts">
+            <div class="user_box">
+                {% for user in users %}
+                <a href="{% url 'chat_page' username=user.username %}" class="box">
+                
+                    <div class="user">
+                        <img src="{{user.avatar.url}}" alt="{{user.avatar}}" class="profile-image">        
+                        <div class="name" style="margin-left: 1rem;">
+                            {{user.first_name}} {{user.last_name}} <br>
+                            @{{user.username}}
+                        </div>
+                    </div>
+                </a>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+
+    <div class="message_box" >
+        <div class="conversation">
+            <div class="conversation_user">
+                <img src="{{user.avatar.url}}" alt="" class="profile-image">
+                <span class="ml-2">
+                    {{user.first_name}} {{user.last_name}} <br>
+                    @{{user.username}}
+                </span>
+                {% if user.online_status %}
+                    <small id="{{user.username}}_small">&#128994;</small>
+                {% else %}
+                    <small id="{{user.username}}_small">&#128308;</small>
+                {% endif %}
+            </div>
+            <div class="message-table-scroll">
+                <table class="table">
+                    <tbody id='chat-body'>
+                        {% for message in messages %}
+                            {% if message.sender == request.user.username %}
+                            <tr>
+                                <td style="border-right: 1px solid black; border-top: none;">
+                                    <p class="bg-success p-2 mt-2 mr-5 shadown-sm text-white float-right rounded" style="word-wrap: break-word; width: 300px;" >
+                                        {{message.message}}
+                                    </p>
+                                </td>
+                                <td style="border-top: none;">
+                                    <p><small>{{message.timestamp|time:'H:i'}}</small>
+                                    </p>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td style="border-right: 1px solid black; border-top: none;">
+                                    <p class="bg-primary p-2 mt-2 mr-5 shadown-sm text-white float-left rounded" style="word-wrap: break-word; width: 300px;">
+                                        {{message.message}}
+                                    </p>
+                                </td>
+                                <td style="border-top: none;">
+                                    <p><small>{{message.timestamp|time:'H:i'}}</small>
+                                    </p>
+                                </td>
+                            </tr>
+                            {% endif %} 
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="message-input">
+                <div style="width: 90%;">
+                        <input type="text" class="chat_mes" id="message_input" placeholder="Write message..." required>
+                </div>
+                <div>
+                    <div class="mes_send">
+                        <button class="btn btn-primary" style="border-radius: 100px; padding: 10px;" id="chat-message-submit">Send</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{{user.id|json_script:"json-username"}}
+{{request.user.username|json_script:"json-message-username"}}
+{% endblock content %}
+{% block javascript %}
+<script src="{% static 'js/chat.js' %}"></script>
+<script src="{% static 'js/online_status.js' %}"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+crossorigin="anonymous" />
+{% endblock %}

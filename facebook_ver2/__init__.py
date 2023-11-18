@@ -1,0 +1,1 @@
+default_app_config = 'facebook_ver2.apps.FacebookVer2Config'

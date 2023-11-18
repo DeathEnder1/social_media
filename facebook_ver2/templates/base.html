@@ -1,46 +1,172 @@
 <!DOCTYPE html>
-
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block tile %}{%endblock%}</title>
-    {% load static %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+    
     <link rel="stylesheet" href="{% static 'styles/styling.css' %}">    
-    <link rel="icon" href="/static/styles/favicon.ico">
+
+    <!-- <link rel="icon" href="/static/styles/favicon.ico"> -->
+
 </head>
 <body>
-    <div class = "nav_container">
-        <div class="left">
-            <a href="/" class="">
-                <img src="/static/styles/logo.png" class="logo_image">
-            </a>
-            <form action="{% url 'search'%}" method="POST">
-                {% csrf_token %}
-                <div class="">
-                    <input type="text" class="prompt" name="searched" placeholder="name of a friend...">
-                    <i class="search icon"></i>
-                    <button class="" type="submit">Search</button>
-                </div>
-            </form>
-        </div>
-        <div class="right">
-            {% if request.user.is_authenticated %}
-            <div class="avatar_container">
-                <a href="/user_page/{{request.user.id}}" >
-                    <img src="{{request.user.avatar.url}}" class="avatar_image">
+    <!-- NAVBAR -->
+    <nav>
+        <div class = "nav_container">
+            <!-- LEFT-NAV -->
+            <div class="left">
+                <!-- LOGO-WEB-PAGE -->
+                <a href="/">
+                    <img src="static\styles\Logo1.jpg" class="photo_image">       
                 </a>
+                <!-- SEARCH-BOX -->
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'search'%}" method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="search-bar">
+                        <ion-icon name="search-outline"></ion-icon>
+                        <input type="text" class="prompt" name="searched" placeholder="Search...">
+                        <select name="search_type" style="border: none; background: none">
+                            <option value="username">Search by Username</option>
+                            <option value="post">Search by Post</option>
+                        </select>
+                        <!-- <button class="Search-button" type="submit"></button> -->
+                    </div>
+                </form>
+                {%endif%}
             </div>
-                <a href="{% url 'logout' %}" class="login_logout" >
-                    Logout
-                </a>
-            {%else%}
-            <a href="{% url 'login'%}" class="login_logout">
-                Login
-            </a>
-            {%endif%}
-        </div>
-    </div>
+            
+            <!-- RIGHT-NAV -->
+    
+                <div class="right">
+                
+                    {% if request.user.is_authenticated %}
+                    <a href="/chat_room" style="margin-right: 10%; margin-left: 10%;"><img src="/static/styles/Messenger.png" class="photo_image"></a>
+
+                    <div class="avatar_container online" onclick="settingsMenuToggle()">
+                        <a href="#" >
+                            <img src="{{request.user.avatar.url}}" class="photo_image">
+                        </a>
+                    </div>
+
+                    <div class="setting_menu">
+                        <div class="setting_menu_inner">
+                            <div class="avatar">
+                                <a href="/user_page/{{request.user.id}}">
+                                    <img src="{{request.user.avatar.url}}" class="photo_image">
+                                </a>
+
+                                <div style="margin-left: 5%;">
+                                    <a href="/user_page/{{request.user.id}}">
+                                        <div style="text-align: left; color:black; font-size:18px">
+                                            {{user.first_name}} {{user.last_name}}
+                                        </div>
+                                    <span style="color:black; font-size:16px">@{{user.username}}</span> See your profile
+                                    </a>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="avatar">
+                                <a href="/chat_room">
+                                    <img src="/static/styles/Messenger.png" class="photo_image">
+                                </a>
+                                <div style="margin-left: 5%;">
+                                    <a href="/chat_room">
+                                        <span style="color: black; font-size: 16px;">Message</span> Go to chat room
+                                    </a>                              
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="setting_links" >
+                                <img src="/static/styles/logout.png" class="setting_icon">
+                                <a href="{% url 'logout' %}" style="margin-left: 5%;">Logout <img src="/static/styles/arrow.png" width="10px"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {%else%}
+                    <a href="{% url 'login'%}" class="btn btn-primary">
+                        Login
+                    </a>
+
+                    {%endif%}
+                </div>
+        
+            </div>
+        </nav>
     {% block content %}{% endblock %}
+ {% block javascript %}{% endblock %}
+
+<script src="/static/styles/script.js"></script>
+
+<script>
+    $(document).ready(function(){
+    let display=false
+    $('.like-form').submit(function(e){
+        e.preventDefault()
+
+        const post_id = $(this).attr('id')
+
+        const LikeText = $(`.like-btn${post_id}`).html()
+        const trim =$.trim(LikeText)
+        console.log(trim)
+
+        const url = $(this).attr('action')
+
+        let res;
+        const like= $(`.like-count${post_id}`).text()
+        const trimCount = parseInt(like)
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                'post_id':post_id,
+            },
+            success: function(response){
+                if (trim =='<i><ion-icon name="heart-dislike-outline" role="img" class="md hydrated"></ion-icon></i>'){
+                    $(`.like-btn${post_id}`).html('<i><ion-icon name="heart-outline"></ion-icon></ion-icon></i>')
+                    res =trimCount-1
+                } else{
+                    $(`.like-btn${post_id}`).html('<i><ion-icon name="heart-dislike-outline"></i>')
+                    res =trimCount+1
+                }
+                const like= $(`.like-count${post_id}`).text(res)
+            },
+            error: function(response){
+                console.log('error',response)
+            }        
+        })
+
+    });
+});
+</script>
+
+<script>
+    $( document ).ready(function() {
+        let display = false
+        $(".cmt_btn").click(function () {
+            if (display===false) {
+                $(this).next(".comment").show("slow");
+                display=true
+            } else {
+                $(this).next(".comment").hide("slow");
+                display=false
+            }  
+        })
+    });
+</script>
+
+
 </body>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </html>

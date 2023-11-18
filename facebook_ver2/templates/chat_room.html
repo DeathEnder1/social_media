@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ChatMessage{% endblock title %}
+
+{% block content %}
+<div class="back-container">
+    <div class="contacts">
+        <div class="user_box">
+         {% for user in users %}
+            <a href="{% url 'chat_page' username=user.username %}" class="box">
+
+                <div class="user">
+                    <img src="{{user.avatar.url}}" alt="{{user.avatar}}" class="profile-image">        
+                    <div class="name">
+                        {{user.first_name}} {{user.last_name}} <br>
+                        @{{user.username}}
+                    </div>
+                </div>
+            </a>
+            {%endfor%}
+        </div>    
+    </div>
+           
+</div>
+
+{% endblock content %}

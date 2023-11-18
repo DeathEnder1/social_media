@@ -1,27 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
 {% if page == 'login' %}
-    <div>
+    <!-- LOGIN-START -->
+    <div class="">
         <form method="POST" action="" class="login_form_container">
             {% csrf_token %}
             <div class="form_box">
                 <div>
-                    <h2 class="note">LOGIN</h2>
+                    <h1>LOGIN</h1>
+                    <br>
+                </div>
+
+                <div class="input_text">
+                    <input type="text" class="input" name="Username"/>
+                    <label class="placeholder">Username <ion-icon name="person-circle-outline"></ion-icon></label>             
                 </div>
                 <div class="input_text">
-                    <label>USERNAME</label>
-                    <input type="text" name="Username" placeholder="Enter Username"/>
-                    
+                    <input type="password" class="input" name="Password"/>
+                    <label class="placeholder">Password <ion-icon name="lock-closed-outline"></ion-icon></label>
                 </div>
-                <div class="input_text">
-                    <label>PASSWORD</label>
-                    <input type="password" name="Password" placeholder="Enter Password"/>
+
+                <div>
+                    <!-- Chưa có link -->
+                    <a href="#">Forgot your password?</a>
                 </div>
+
                 <div class="button_container">
                     <input type="submit" value="Login" class="submit_button">
                 </div>
+
                 <p class="reg_container">Haven't signed up yet? <a href="{%url 'register' %}">Register</a></p>
-                
                 {% if messages %}
                     <p class="error">
                         {% for message in messages %}
@@ -34,29 +42,46 @@
         
     </div>
 {%else%}
+    <!-- RESGISTER-START -->
     <div>
         <form method="POST" action="" class="register_form_container">
             {% csrf_token %}
             <div class="register_form_box">
-                <div>
-                    <h2 class="note">REGISTER</h2>
+                <div style="margin-bottom: 30px;">
+                    <h1>REGISTER</h1>
+                </div>
+
+                <div class="input_text">
+                    <input type="text" class="input" name="username">
+                    <label class="placeholder">Username <ion-icon name="person-circle-outline"></ion-icon></label>
+                    <!-- {{form.username}} -->
+                </div>
+
+                <div style="display: flex; justify-content: space-between; width: 100%; max-width: 299px;">
+                    <div class="input_text">
+                        <input type="text" class="input" name="first_name">
+                        <label class="placeholder">First name</label>
+                        <!-- {{form.first_name}} -->
+                    </div>
+                    <div class="input_text">
+                        <input type="text" class="input" style="margin-left: 1.5%;" name="last_name">
+                        <label class="placeholder">Last name</label>
+                        <!-- {{form.last_name}} -->
+                    </div>
+                </div>
+
+
+                <div class="input_text">
+                    <input type="password" class="input" name="password1">
+                    <label class="placeholder">password <ion-icon name="lock-closed-outline"></ion-icon></label>
+                    <!-- {{form.password1}} -->
                 </div>
                 <div class="input_text">
-                    <label >USERNAME:</label>
-                    {{form.username}}
+                    <input type="password" class="input" name="password2">
+                    <label class="placeholder">re-enter password <ion-icon name="lock-closed-outline"></ion-icon></label>
+                    <!-- {{form.password2}} -->
                 </div>
-                <div class="input_text">
-                    <label >EMAIL:</label>
-                    {{form.email}}
-                </div>
-                <div class="input_text">
-                    <label >PASSWORD:</label>
-                    {{form.password1}}
-                </div>
-                <div class="input_text">
-                    <label >RE-ENTER PASSWORD:</label>
-                    {{form.password2}}
-                </div>
+
                 <div class="button_container">
                     <input type="submit" value="Register" class="submit_button">
                 </div>
@@ -67,6 +92,7 @@
                         {% endfor %}
                     </p>
                 {% endif %}
+                
                 <p class="reg_container">Already signed up? <a href="{%url 'login'%}">Login</a></p>
             </div>
         </form>
