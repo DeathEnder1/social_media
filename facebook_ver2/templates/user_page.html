@@ -40,14 +40,19 @@
         </div>
 
         <div class="menu">
-            <a href="#" class="active">
+            {% if request.user == user%}
+            <a href="/user_page/{{request.user.id}}" class="active">
                 <span class="icon">
                     <ion-icon name="book-outline"></ion-icon>
                 </span>
-                Posts
+                Post
             </a>
-            
-            {% if request.user == user%}
+            <a href="/follow_list/{{request.user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+                </span>
+                Following
+            </a>
             <a href="/chat_room" class="active">
                 <span class="icon">
                     <ion-icon name="chatbubbles-outline"></ion-icon>
@@ -61,30 +66,44 @@
                 Edit profile
             </a>
             {%else%}
-            <a href="/chat_room" class="active">
+            <a href="/user_page/{{user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Post
+            </a>
+            <a href="/follow_list/{{user.id}}" class="active">
+                <span class="icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                </span>
+                Following
+            </a>
+            <a href="/chat_page/{{user.username}}" class="active">
                 <span class="icon">
                     <ion-icon name="chatbubbles-outline"></ion-icon>
                 </span>
                 Message
             </a>
-            <a href="#" class="active">
+            <div class="active" style="display:flex; flex-direction:row">
                 <span class="icon">
                     <ion-icon name="checkmark-circle-outline"></ion-icon>
                 </span>
-                <form method = "POST">
+                <div style="width: 100%;">
+                <form method = "POST" >
                     {% csrf_token %}
                     {% if request.user in user.followed_by.all %}
-                        <button type = "submit" class="button red_btn">
+                        <button type = "submit" class="button" >
                             Unfollow user
                         </button>
                     {%else%}   
-                        <button type = "submit" class="button green_btn">      
+                        <button type = "submit" class="button">      
                             Follow user
                         </button>
                     {%endif%}
                 </form>
-            </a>
-            <a href="#" class="active">
+                </div>
+            </div>
+            <div class="active" style="display:flex; flex-direction:row">
                 <span class="icon">
                     <ion-icon name="close-circle-outline"></ion-icon>
                 </span>
@@ -101,10 +120,11 @@
                         <button type="submit" class="button">Unblock</button>
                     </form>
                 {% endif %}
-            </a>
+                </div>
             {%endif%}
         </div>
     </div>
+
 
     <div class="profile-home">
         <!-- PROFILE-CREATE_POST -->
@@ -159,36 +179,39 @@
         {% for item in st %}
         <div class="post_container">
             <div class="post" >
-                <div class="post_header">
+                    <div class="post_header">
+                        <div class="user_name">
+                            <a href="/user_page/{{user.id}}" class="name" >
+                                <img src="{{user.avatar.url}}" class="photo_image"> 
+                            </a> 
+                            <div>
+                                <a href="/user_page/{{user.id}}"><p class="name">{{user.first_name}} {{user.last_name}}</p>
+                                <p class="mention">@{{user.username}}</p></a>
+                            </div>
+                        </div>
 
-                    <div class="user_name">
-                        <a href="/user_page/{{item.author.id}}" class="name" >
-                            <img src="{{item.author.avatar.url}}" class="photo_image"> 
-                        </a> 
-                        <div>
-                            <a href="/user_page/{{item.author.id}}" class="name"><b>{{item.author.first_name}} {{item.author.last_name}}</b></a>
-                            <a href="/user_page/{{item.author.id}}" class="mention">
-                                @{{item.author.username}}
-                            </a>
+                        <div class="right" style="display: flex; align-items: center">
+                            {{item.created|timesince}} ago
+                            <div class="dropdown">
+                                <ion-icon name="ellipsis-horizontal-outline" onclick="editMenuToggle(event)"></ion-icon>
+                                <div class="dropdown-content" style="display: none;">
+                                  <!-- Update edit -->
+                                  <a href="/update/{{item.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="settings-outline" style="margin-right: 0.5rem;"></ion-icon></span>Update
+                                  </a>
+                                  <hr>
+                                  <!-- Delete edit -->
+                                  <a href="/delete/{{item.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline" style="margin-right: 0.5rem;"></ion-icon></span>Delete
+                                  </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="right">
-                        {{item.created|timesince}} ago
-                        <a href="/update/{{item.id}}">Update</a>
-                        
-                        <a href="/delete/{{item.id}}" onclick="popup_delete">Delete</a>
-                        <!-- <span class="edit">
-                            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-                        </span> -->
-
-                        <div class="setting_edit"></div>
-                    </div>
-                </div>
 
                 <!-- CONTENT-POST -->
                 <div class="content">
-                    <div class="">
+                    <div class="post_content">
                         {{item.content|linebreaks}}
                     </div>
                     <div>
@@ -215,14 +238,41 @@
                             <div class="like-count{{item.id}} count">{{item.liked.count}}</div>
                         </form>
 
-                        <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
-                        <span><ion-icon name="share-social-outline"></ion-icon></span>
+                        <button class="cmt_btn" style="background: none; font-size: 1rem; margin-bottom: 1rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.4); padding: 2px; font-size: 15px;">
+                            <div style="display: flex; flex-direction: row; margin-left: 0.5rem;">
+                                <ion-icon name="chatbox-ellipses-outline" class="icon1" style="color: var(--color-success);"></ion-icon>
+                                <div class="count">
+                                    {{item.comment_set.all.count}}
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Comment -->
+                        <div class="comment">
+                            {% if item.comment_set.all %}
+                            {% for comment in item.comment_set.all %}
+                            <div class="cmt_result">
+                                <a href="/user_page/{{comment.user.id}}" class="cmt_name">
+                                    <img src="{{comment.user.avatar.url}}" class="cmt_photo"> 
+                                </a>
+                                <div class="cmt_content">
+                                    <a href="/user_page/{{request.user.id}}" class="cmt_name">{{comment.user}}</a>
+                                    <p>{{comment.body}}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                        <form method="POST" id = "{{item.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value={{item.id}}>
+                            <input type="text" name="body" class="cmt_input" placeholder="Get comment" required>
+                            <button class="btn btn-primary" style="margin-left: 1rem; display: flex; align-items: center;" type="submit" name = "submit_commentform">
+                                <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                                Comment
+                            </button>
+                        </form>
                     </div>
-                </div>
-    
-                <!-- VIEW-POST -->
-                <div class="view-post">
-                    <div class="comments text-muted">View all ... comments</div>
                 </div>
             </div>
         </div>

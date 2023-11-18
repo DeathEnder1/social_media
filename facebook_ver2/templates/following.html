@@ -14,7 +14,11 @@
                     <div class="border_avatar_home">
                         <img src="{{request.user.avatar.url}}" class="photo_image">
                     </div>
-                    <p class="">{{request.user.first_name}}{{request.user.last_name}}<br>@{{request.user}}</p>
+                  
+                    <div style="display: flex; flex-direction:column;">
+                        <p class="name">{{request.user.first_name}} {{request.user.last_name}}</p>
+                        <p class="mention">@{{request.user}}</p>
+                    </div>
                 </div>
             </a>
     
@@ -40,7 +44,7 @@
         
         <div class="middle">
             {% for article in articles %}
-            {% if article.author in user.follows.all %}
+            {% if article.author in follows %}
             <div class="post_container">
                 <!-- POST -->
                 <div class="post" >
@@ -51,15 +55,29 @@
                                 <img src="{{article.author.avatar.url}}" class="photo_image"> 
                             </a> 
                             <div>
-                                <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a>
-                                <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
+                                <a href="/user_page/{{article.author.id}}"><p class="name">{{article.author.first_name}} {{article.author.last_name}}</p>
+                                <p class="mention">@{{article.author.username}}</p></a>
                             </div>
                         </div>
-                        <div class="right">
+
+                        <div class="right" style="display: flex; align-items: center">
                             {{article.created|timesince}} ago
-                            <span class="edit">
-                                <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-                            </span>
+                            {% if request.user == article.author %}
+                            <div class="dropdown">
+                                <ion-icon name="ellipsis-horizontal-outline" onclick="editMenuToggle(event)"></ion-icon>
+                                <div class="dropdown-content" style="display: none;">
+                                  <!-- Update edit -->
+                                  <a href="/update/{{article.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="settings-outline" style="margin-right: 0.5rem;"></ion-icon></span>Update
+                                  </a>
+                                  <hr>
+                                  <!-- Delete edit -->
+                                  <a href="/delete/{{article.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline" style="margin-right: 0.5rem;"></ion-icon></span>Delete
+                                  </a>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
         
@@ -78,6 +96,7 @@
                     <!-- INTERACT-POST -->
                     <div class="interact">
                         <div class="interact_button">
+                            <!-- Like - Unlike -->
                             <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
                                 {% csrf_token %}
                                 <input type="hidden" name="post_id" value={{article.id}}>
@@ -90,19 +109,41 @@
                                 </button>
                                 <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
                             </form>
-
-                            <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
-                            <span><ion-icon name="share-social-outline"></ion-icon></span>
+                            
+                            <button class="cmt_btn" style="background: none; font-size: 1rem; margin-bottom: 1rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.4); padding: 2px; font-size: 15px;">
+                                <div style="display: flex; flex-direction: row; margin-left: 0.5rem;">
+                                    <ion-icon name="chatbox-ellipses-outline" class="icon1" style="color: var(--color-success);"></ion-icon>
+                                    <div class="count">
+                                        {{article.comment_set.all.count}}
+                                    </div>
+                                </div>
+                            </button>
+                            <!-- Comment -->
+                            <div class="comment">
+                                {% if article.comment_set.all %}
+                                {% for comment in article.comment_set.all %}
+                                <div class="cmt_result">
+                                    <a href="/user_page/{{comment.user.id}}" class="cmt_name">
+                                        <img src="{{comment.user.avatar.url}}" class="cmt_photo"> 
+                                    </a>
+                                    <div class="cmt_content">
+                                        <a href="/user_page/{{request.user.id}}" class="cmt_name">{{comment.user}}</a>
+                                        <p>{{comment.body}}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                            <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <input type="text" name="body" class="cmt_input" placeholder="Get comment" required>
+                                <button class="btn btn-primary" style="margin-left: 1rem; display: flex; align-items: center;" type="submit" name = "submit_commentform">
+                                    <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                                    Comment
+                                </button>
+                            </form>
                         </div>
-
-                        <div class="bookmark">
-                            <span><ion-icon name="bookmark-outline"></ion-icon></span>
-                        </div>
-                    </div>
-        
-                    <!-- VIEW-POST -->
-                    <div class="view-post">
-                        <div class="comments text-muted">View all ... comments</div>
                     </div>
                 </div>
             </div>
@@ -111,25 +152,32 @@
         </div> 
     
         <div class="right">
-           <div class="messages">
-                <div class="heading">
-                    <h3>Messages</h3>
-                    <ion-icon name="create-outline"></ion-icon>
+
+            <div class="card">
+                <div class="card-header">
+                    You may know
                 </div>
 
-                <div class="search-bar">
-                    <ion-icon name="search-circle-outline"></ion-icon>
-                    <input type="search" placeholder="Search messages" id="message-search">
+                <div class="card-body" style="display:flex; flex-direction:column">                    
+                    <p class="card-text" >
+                        {% for user1 in  alluser %}
+                        <div style="display:flex; flex-direction:left">
+                            {% if user not in user1.followed_by.all and user != user1 %}
+                                <a href="/user_page/{{user1.id}}" class="name" >
+                                <img src="{{user1.avatar.url}}" class="photo_image"> 
+                                </a>
+                                <a href="/user_page/{{user1.id}}" class="name">
+                                    <div style="display: flex; flex-direction:column; margin-left:10px">
+                                        <p class="name">{{user1.first_name}} {{user1.last_name}}</p>
+                                        <p class="mention">@{{user1}}</p>
+                                    </div>
+                                </a>
+                            {%endif%}
+                        </div>
+                        {% endfor %}
+                    </p>
                 </div>
-
-                <div class="category">
-                    <h4 class="active">Primary</h4>
-                    <h4>General</h4>
-                    <h4 class="message-requests">Requests</h4>
-                </div>
-
-                <div></div>
-           </div>
+            </div>
         </div>
     </div>
     </main>

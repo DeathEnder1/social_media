@@ -29,8 +29,22 @@ document.addEventListener('click', (event) => {
   }
 });
 
-// pop edit post
-
+//dropdown edit home
+function editMenuToggle(event) {
+  event.stopPropagation();
+  const dropdownContent = event.currentTarget.nextElementSibling;
+  dropdownContent.style.display = dropdownContent.style.display === 'none' ? 'block' : 'none';
+}
+// Hide dropdown menu when clicking outside
+document.addEventListener('click', function (event) {
+  const dropdowns = document.getElementsByClassName('dropdown-content');
+  for (let i = 0; i < dropdowns.length; i++) {
+    const dropdown = dropdowns[i];
+    if (dropdown.style.display === 'block' && !dropdown.contains(event.target)) {
+      dropdown.style.display = 'none';
+    }
+  }
+});
 
 // 
 var selDiv = "";

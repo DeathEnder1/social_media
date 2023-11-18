@@ -1,26 +1,151 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% block tile %}Mặt sách vơ 2{% endblock tile %}
 
-{% block content%}
-<center>
-    {% if searched %}
-        {% if search_type == 'username' %}
+{%block content%}
+
+{% if request.user.is_authenticated %}
+    <main>
+        <div class="search_container" >
+            <!-- Search by username -->
+            {% if searched %}
+            {% if search_type == 'username' %}
             <h1>You Searched for {{ searched }} by Username</h1>
-            <br/>
             {% for profile in profiles %}
-                <a href="{% url 'user_page' profile.id %}">{{ profile }}</a><br/>
-            {% endfor %}
-        {% elif search_type == 'post' %}
-            <h1>You Searched for {{ searched }} by Post</h1>
-            <br/>
-            {% for post in posts %}
-            <h2>{{ post.content }}</h2> <!-- Hiển thị nội dung của bài viết -->
-            <p>Posted by: <a href="{% url 'user_page' post.author_id %}">{{ post.author }}</a></p> <!-- Hiển thị tên người đăng bài viết -->
-            <hr>
+            <div class="post_container">
+                <div class="header">
+                    <div class="post" >
+                        <!-- INFOR'S POST -->
+                        <div class="user_name">
+                            <a href="{% url 'user_page' profile.id %}" class="name" >
+                                <img src="{{profile.avatar.url}}" class="photo_image"> 
+                            </a> 
+
+                            <div>
+                                <a href="{% url 'user_page' profile.id %}" class="name">{{profile.first_name}} {{profile.last_name}}</a><br>
+                                <a href="{% url 'user_page' profile.id %}" class="mention">@{{profile.username}}</a>
+                            </div>
+
+                            {{profile.bio}}
+                        </div>
+                    </div>
+                </div>
+            </div>          
             {% endfor %}
 
-        {% endif %}
-    {% else %}
-        <h1>Hey! You Forgot to Search!!</h1>
-    {% endif %}
-    </center>
-{% endblock %}
+            <!-- Search by post -->
+            {% elif search_type == 'post' %}
+            <h1>You Searched for {{ searched }} by Post</h1>
+            {% for article in articles %}
+            <div class="post_container">
+                <div class="post" >
+                    <!-- INFOR'S POST -->
+                    <div class="header" style="display: flex; justify-content: space-between;">
+                        <div class="user_name">
+                            <a href="/user_page/{{article.author.id}}" class="name" >
+                                <img src="{{article.author.avatar.url}}" class="photo_image"> 
+                            </a> 
+                            <div>
+                                <a href="/user_page/{{article.author.id}}" class="name">{{article.author.first_name}} {{article.author.last_name}}</a><br>
+                                <a href="/user_page/{{article.author.id}}" class="mention">@{{article.author.username}}</a>
+                            </div>
+                        </div>
+
+                        <div class="right" style="display: flex; align-items: center">
+                            {{article.created|timesince}} ago
+                            {% if request.user == article.author %}
+                            <div class="dropdown">
+                                <ion-icon name="ellipsis-horizontal-outline" onclick="editMenuToggle(event)"></ion-icon>
+                                <div class="dropdown-content" style="display: none;">
+                                  <!-- Update edit -->
+                                  <a href="/update/{{article.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="settings-outline" style="margin-right: 0.5rem;"></ion-icon></span>Update
+                                  </a>
+                                  <hr>
+                                  <!-- Delete edit -->
+                                  <a href="/delete/{{article.id}}">
+                                    <span style="color: var(--color-danger)"><ion-icon name="trash-bin-outline" style="margin-right: 0.5rem;"></ion-icon></span>Delete
+                                  </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+        
+                    <!-- CONTENT-POST -->
+                    <div class="content">
+                        <div class="post_content">
+                            {{article.content|linebreaks}}
+                        </div>    
+                        <div>
+                            {% if article.image != '' %}
+                                <img src="{{article.image.url}}" class="post_image">
+                            {% endif %}
+                        </div>
+                    </div>
+        
+                    <!-- INTERACT-POST -->
+                    <div class="interact">
+                        <div class="interact_button">
+                            <!-- Like - Unlike -->
+                            <form action="{% url 'like_post' %}" method="POST" id="{{article.id}}" class="like-form like">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <button type="submit"  class="like-btn{{article.id}} icon1">
+                                    {% if request.user in article.liked.all%}
+                                        <i><ion-icon name="heart-dislike-outline"></ion-icon></i>
+                                    {%else%}
+                                        <i><ion-icon name="heart-outline"></ion-icon></i> 
+                                    {%endif%}
+                                </button>
+                                <div class="like-count{{article.id}} count">{{article.liked.count}}</div>
+                            </form>
+
+                            <button class="cmt_btn" style="background: none; font-size: 1rem; margin-bottom: 1rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.4); padding: 2px; font-size: 15px;">
+                                <div style="display: flex; flex-direction: row; margin-left: 0.5rem;">
+                                    <ion-icon name="chatbox-ellipses-outline" class="icon1" style="color: var(--color-success);"></ion-icon>
+                                    <div class="count">
+                                        {{article.comment_set.all.count}}
+                                    </div>
+                                </div>
+                            </button>
+                            <!-- Comment -->
+                            <div class="comment">
+                                {% if article.comment_set.all %}
+                                {% for comment in article.comment_set.all %}
+                                <div class="cmt_result">
+                                    <a href="/user_page/{{comment.user.id}}" class="cmt_name">
+                                        <img src="{{comment.user.avatar.url}}" class="cmt_photo"> 
+                                    </a>
+                                    <div class="cmt_content">
+                                        <a href="/user_page/{{request.user.id}}" class="cmt_name">{{comment.user}}</a>
+                                        <p>{{comment.body}}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                            <form method="POST" id = "{{article.id}}" style="display: flex; align-items: center; justify-content: space-between; width: 710px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value={{article.id}}>
+                                <input type="text" name="body" class="cmt_input" placeholder="Get comment" required>
+                                <button class="btn btn-primary" style="margin-left: 1rem; display: flex; align-items: center;" type="submit" name = "submit_commentform">
+                                    <span><ion-icon name="chatbox-ellipses-outline"></ion-icon></span>
+                                    Comment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% else %}
+            <h1>Hey! You Forgot to Search!!</h1>
+            {% endif %}
+        </div>
+    </main>
+{% endif %}
+
+{%endblock content%}

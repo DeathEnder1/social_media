@@ -10,7 +10,7 @@ from .forms import *
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.db.models import Q
-import pusher
+
 from django.urls import reverse_lazy, reverse
 def home(request):
     if request.user.is_authenticated:
@@ -64,8 +64,26 @@ def following(request):
         user = Profiles.objects.get(id=request.user.id)
         articles= Post.objects.all()
         follows = user.follows.all()
+        commentform=CommentForm()
+        if request.method == "POST" :
+            if "submit_commentform" in request.POST:
+                commentform = CommentForm(request.POST)
+                if commentform.is_valid():
+                    formin = commentform.save(commit=False)
+                    formin.user = Profiles.objects.get(id = request.user.id)
+                    formin.post = Post.objects.get(id=request.POST.get('post_id'))
+                    formin.save()
+                response_data = {
+                    'comment': {
+                        'user': formin.user.username,
+                        'body': formin.body,
+                        }
+                    }
+                return(redirect('/following'))
         context = {
-            'articles':articles
+            'articles':articles,
+            'follows':follows,
+            'commentform':commentform,
         }
         return render(request, 'following.html',context)
     else: 
@@ -138,6 +156,8 @@ def update(request, id):
             return redirect('/user_page/'+str(uid))
         else:
             return HttpResponse('You can not edit this post')
+    else:
+        form = PostForm(instance=st)
     return render(request, 'update.html',{'form':form})
         
 
@@ -160,8 +180,7 @@ def setting(request):
 
 @login_required(login_url='login')
 def user_page(request,id):
-    user = Profiles.objects.get(id=id)   
-    # user2 = Profiles.objects.get(id = request.user.id)
+    user = Profiles.objects.get(id=id)
     st = Post.objects.filter(author = id)
     postform =PostForm()
     commentform = CommentForm()
@@ -186,6 +205,7 @@ def user_page(request,id):
                 formin.post = Post.objects.get(id=request.POST.get('post_id'))
                 # commentform = CommentForm()
                 formin.save()
+                return redirect('/user_page/'+str(id))
 
         else:     
             aid = request.session.get('_auth_user_id')
@@ -202,7 +222,7 @@ def user_page(request,id):
              'postform':postform,
              'commentform ':commentform ,
              'p_add':p_add,
-             'is_blocked':is_blocked
+             'is_blocked':is_blocked,
              }
 
     return render(request,'user_page.html',context)
@@ -239,8 +259,8 @@ def search(request):
             profiles = Profiles.objects.filter(username__contains=searched).exclude(id__in=blocking_users)
             return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'profiles': profiles})
         elif search_type == 'post':
-            posts = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
-            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'posts': posts})
+            articles = Post.objects.filter(content__contains=searched).exclude(author__in=blocking_users)
+            return render(request, 'search.html', {'searched': searched, 'search_type': search_type, 'articles': articles})
     else:
         return render(request, 'search.html', {})
     
@@ -299,3 +319,23 @@ def chat_page(request,username):
         'messages':message_obj
     }
     return render(request, 'chat_page.html',context)
+
+@login_required(login_url='login')
+def follow_list(request,id):
+    user = Profiles.objects.get(id=id)
+    st = Post.objects.filter(author = id)
+    follower = user.follows.all()
+    aid = request.session.get('_auth_user_id')
+    current_user = Profiles.objects.get(id=aid)
+
+    if request.method == "POST":
+        if user in current_user.follows.all():
+            current_user.follows.remove(user)
+        else:
+            current_user.follows.add(user)
+    context = {
+        'user':user,
+        'follower':follower,
+        'st':st,
+    }
+    return render(request,'follow_list.html',context)

@@ -43,6 +43,8 @@ class Comment(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self) -> str:
+        return self.body
 
 class Block(models.Model):
     blocker = models.ForeignKey(Profiles, related_name='blocker', on_delete=models.CASCADE)
