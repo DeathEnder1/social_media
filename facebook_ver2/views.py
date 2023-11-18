@@ -18,7 +18,7 @@ def home(request):
         commentform=CommentForm()
         user = Profiles.objects.get(id=request.user.id)
         items = list(Profiles.objects.all())
-        alluser = random.sample(items, 3)
+        alluser = random.sample(items, 0)
         blocked_users = Block.objects.filter(blocker=user).values_list('blocked_user', flat=True)
         blocker = Block.objects.filter(blocked_user=request.user).values_list('blocker', flat=True)
         articles = Post.objects.exclude(Q(author__in=blocked_users) | Q(author__in=blocker))
